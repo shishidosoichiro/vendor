@@ -1,0 +1,8 @@
+/vendor
+*.exe
+
+/tests/test_async
+/tests/test_pipe
+/tests/test_normalize_path
+
+/dist
