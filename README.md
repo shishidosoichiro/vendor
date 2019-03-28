@@ -2,15 +2,27 @@
 
 DIY Application Version Manager
 
-## Install
+## Install vendor
 
 ```
-wget <url>/vendor-0.0.1-darwin.tar.gz
-tar -xvzf vendor-0.0.1-darwin.tar.gz
-mv ./vendor-0.0.1-darwin/vendor /usr/local/bin
+wget <url>/vendor-0.1.0-linux.tar.gz
+tar -xvzf vendor-0.1.0-linux.tar.gz
+mv ./vendor-0.1.0-linux/vendor /usr/local/bin
 ```
 
-## Install
+```
+wget <url>/vendor-0.1.0-darwin.tar.gz
+tar -xvzf vendor-0.1.0-darwin.tar.gz
+mv ./vendor-0.1.0-darwin/vendor /usr/local/bin
+```
+
+```
+wget <url>/vendor-0.1.0-windows.zip
+tar -xvzf vendor-0.1.0-windows.zip
+mv ./vendor-0.1.0-windows/vendor ~/bin
+```
+
+## Install applications
 
 ```
 vendor install nim node duktape
@@ -45,6 +57,7 @@ Usage:
   vendor [options] manager pull [<app>...]
   vendor [options] manager init <app>
   vendor [options] root crobber
+  vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
   vendor [options] util download <url>
 
@@ -69,7 +82,8 @@ Commands:
   versions        Output versions of each applications
   manager exec    Excecute <cmd> on <app> work dirrectory.
   manager pull    Download specified application version managers.
-  root crobber    Remove
+  root crobber    Remove everything
+  root exec       Excecute <cmd> on root dirrectory.
   root pull       Update version.txt
   util download   download url and output downloaded filename.
 ```

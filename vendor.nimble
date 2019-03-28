@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.0.1"
+version       = "0.1.0"
 author        = "Soichiro Shishido"
 description   = "app and version vendor"
 license       = "MIT"
