@@ -19,6 +19,7 @@ Usage:
   vendor [options] manager pull [<app>...]
   vendor [options] manager init <app>
   vendor [options] root crobber
+  vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
   vendor [options] util download <url>
 
@@ -43,7 +44,8 @@ Commands:
   versions        Output versions of each applications
   manager exec    Excecute <cmd> on <app> work dirrectory.
   manager pull    Download specified application version managers.
-  root crobber    Remove
+  root crobber    Remove everything
+  root exec       Excecute <cmd> on root dirrectory.
   root pull       Update version.txt
   util download   download url and output downloaded filename.
 
@@ -203,6 +205,16 @@ when isMainModule:
   # root crobber
   elif args["root"] and args["crobber"]:
     m.crobber
+
+  # root exec
+  elif args["root"] and args["exec"]:
+    if update and not m.pullRoot: quit(QuitFailure)
+    let cmd = $args["<cmd>"]
+    let cmdargs = @(args["<args>"])
+    let process = m.start(".", cmd, cmdargs)
+    defer: process.close
+    #await (process > stdout) and (process.errorStream > stderr)
+    discard process.waitForExit
 
   # root pull
   elif args["root"] and args["pull"]:

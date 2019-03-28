@@ -23,6 +23,7 @@ endif
 ifeq ($(upx),true)
 	upx dist/vendor-$(tag)-windows-amd64/vendor.exe
 endif
+	cp -pr vendor-completion.bash dist/vendor-$(tag)-windows-amd64
 	cd dist && zip -r vendor-$(tag)-windows-amd64.zip vendor-$(tag)-windows-amd64
 
 linux:
@@ -33,8 +34,8 @@ endif
 ifeq ($(upx),true)
 	upx dist/vendor-$(tag)-linux-amd64/vendor
 endif
+	cp -pr vendor-completion.bash dist/vendor-$(tag)-linux-amd64
 	cd dist && tar -zcf vendor-$(tag)-linux-amd64.tar.gz vendor-$(tag)-linux-amd64
-
 
 darwin:
 	nim c --out:dist/vendor-$(tag)-darwin-amd64/vendor $(optimize) --cpu:arm64 -f src/vendor.nim
@@ -44,4 +45,5 @@ endif
 ifeq ($(upx),true)
 	upx dist/vendor-$(tag)-darwin-amd64/vendor
 endif
+	cp -pr vendor-completion.bash dist/vendor-$(tag)-darwin-amd64
 	cd dist && tar -zcf vendor-$(tag)-darwin-amd64.tar.gz vendor-$(tag)-darwin-amd64
