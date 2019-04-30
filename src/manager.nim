@@ -28,6 +28,12 @@ proc parseConf(line: string): Conf =
   let sp = line.split(" ")
   return Conf(name: sp[0], url: sp[1])
 
+proc readAll(stream: Stream) =
+  var line: string
+  while not line.contains("#done"):
+    line = string(stream.readLine())
+    echo "READ: " & line
+
 method log*(this: Manager, message: string): void {.base.} =
   if this.debug: echo message
 
@@ -72,11 +78,12 @@ method start*(this: Manager, app, cmd: string, args: openArray[string] = [], opt
 
 method exec*(this: Manager, app, cmd: string, args: openArray[string] = []): (string, int) {.base.} =
   let process = this.start(app, cmd, args, {poStdErrToStdOut, poUsePath})
-  var output = ""
-  if not process.outputStream.atEnd:
-    output = process.outputStream.readAll.strip
+  let stream = process.outputStream
+  var lines: seq[string] = @[]
+  while not stream.atEnd:
+    lines.add(string(stream.readLine()))
   let err = process.waitForExit
-  return (output, err)
+  return (lines.join("\n"), err)
 
 method download*(this: Manager, url: string): string {.base.} =
   echo fmt("url: {url}")
