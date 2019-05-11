@@ -5,22 +5,22 @@ DIY Application Version Manager
 ## Install vendor
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.0/vendor-0.1.0-linux-amd64.tar.gz
-tar -xvzf vendor-0.1.0-linux.tar.gz
-mv ./vendor-0.1.0-linux/vendor /usr/local/bin
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-linux-amd64.tar.gz
+tar -xvzf vendor-0.1.1-linux.tar.gz
+mv ./vendor-0.1.1-linux/vendor /usr/local/bin
 ```
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.0/vendor-0.1.0-darwin-amd64.tar.gz
-tar -xvzf vendor-0.1.0-darwin.tar.gz
-mv ./vendor-0.1.0-darwin/vendor /usr/local/bin
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-darwin-amd64.tar.gz
+tar -xvzf vendor-0.1.1-darwin.tar.gz
+mv ./vendor-0.1.1-darwin/vendor /usr/local/bin
 ```
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.1.0/vendor-0.1.0-windows-amd64.zip" --output - > vendor-0.1.0-windows-amd64.zip
-unzip vendor-0.1.0-windows-amd64.zip
-cp -pr ./vendor-0.1.0-windows-amd64/vendor ~/bin
-cp -pr vendor-0.1.0-windows-amd64/vendor-completion.bash ~/bin
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-windows-amd64.zip" --output - > vendor-0.1.1-windows-amd64.zip
+unzip vendor-0.1.1-windows-amd64.zip
+cp -pr ./vendor-0.1.1-windows-amd64/vendor ~/bin
+cp -pr vendor-0.1.1-windows-amd64/vendor-completion.bash ~/bin
 echo "source ~/bin/vendor-completion.bash" >> .bashrc
 ```
 

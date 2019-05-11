@@ -77,7 +77,7 @@ proc atmark(s: seq[string], x: string): seq[string] =
   s.map(atmark(x))
 
 when isMainModule:
-  let args = docopt(doc, version = "Vendor 0.1.0")
+  let args = docopt(doc, version = "Vendor 0.1.1")
 
   var appsDir = $args["--apps-dir"]
   if appsDir == "nil":

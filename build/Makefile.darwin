@@ -3,7 +3,6 @@ upx=true
 windows_gcc=--gcc.exe:x86_64-w64-mingw32-gcc --gcc.linkerexe:x86_64-w64-mingw32-gcc
 linux_gcc=--gcc.exe:x86_64-unknown-linux-gnu-gcc --gcc.linkerexe:x86_64-unknown-linux-gnu-gcc
 optimize=-d:release -d:ssl --opt:size
-tag=0.1.0
 
 provision-windows:
 	brew install mingw-w64

@@ -1,12 +1,14 @@
+export tag=0.1.1
+
 os=$(shell if uname -s | grep -qi MINGW64; then echo windows; elif uname -s | grep -qi MSYS; then echo windows; elif uname -s | grep -qi Darwin; then echo darwin; else echo linux; fi)
 ext=$(shell if [ $(os) = windows ]; then echo .exe; fi)
 time=$(shell if [ $(os) != windows ]; then echo time; fi)
 
 all: clean
-	make windows
-	make linux
-	make darwin
-	make size
+	make -e windows
+	make -e linux
+	make -e darwin
+	make -e size
 
 build:
 	$(time) nimble build
@@ -27,12 +29,12 @@ clean:
 	rm -rf ./dist/*
 
 windows:
-	$(time) make windows -f build/Makefile.$(os)
+	$(time) make -e windows -f build/Makefile.$(os)
 
 linux:
-	$(time) make linux -f build/Makefile.$(os)
+	$(time) make -e linux -f build/Makefile.$(os)
 
 darwin:
-	$(time) make darwin -f build/Makefile.$(os)
+	$(time) make -e darwin -f build/Makefile.$(os)
 
 .PHONY: build
