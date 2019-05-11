@@ -6,14 +6,14 @@ DIY Application Version Manager
 
 ```
 wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-linux-amd64.tar.gz
-tar -xvzf vendor-0.1.1-linux.tar.gz
-mv ./vendor-0.1.1-linux/vendor /usr/local/bin
+tar -xvzf vendor-0.1.1-linux-amd64.tar.gz
+mv ./vendor-0.1.1-linux-amd64/vendor /usr/local/bin
 ```
 
 ```
 wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-darwin-amd64.tar.gz
-tar -xvzf vendor-0.1.1-darwin.tar.gz
-mv ./vendor-0.1.1-darwin/vendor /usr/local/bin
+tar -xvzf vendor-0.1.1-darwin-amd64.tar.gz
+mv ./vendor-0.1.1-darwin-amd64/vendor /usr/local/bin
 ```
 
 ```
