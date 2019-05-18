@@ -2,14 +2,25 @@
 __vendor_comp_func () {
   local cur=${COMP_WORDS[COMP_CWORD]}
   local prev=${COMP_WORDS[COMP_CWORD-1]}
-
-  if [ "$prev" = "vendor" -o "$prev" = "./vendor" -o "$prev" = "vendor.exe" -o "$prev" = "./vendor.exe" ]; then
-    COMPREPLY=($(compgen -W "bin env home install ls search uninstall versions manager root util" -- "${cur}"))
-  elif [ "$prev" = "manager" ]; then
-    COMPREPLY=($(compgen -W "exec pull init" -- "${cur}"))
-  elif [ "$prev" = "root" ]; then
-    COMPREPLY=($(compgen -W "crobber pull" -- "${cur}"))
-  fi
+  VENDOR=vendor
+  case "$prev" in
+    "vendor"|"./vendor"|"vendor.exe"|"./vendor.exe")
+      COMPREPLY=($(compgen -W "bin env home install latest ls search uninstall versions manager root util" -- "${cur}"))
+    ;;
+    "manager")
+      COMPREPLY=($(compgen -W "exec pull init" -- "${cur}"))
+    ;;
+    "root")
+      COMPREPLY=($(compgen -W "crobber pull" -- "${cur}"))
+    ;;
+    "bin"|"env"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions"|"exec"|"pull"|"init"|"crobber"|"pull")
+      apps=$($VENDOR ls)
+      COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+    ;;
+    *)
+      echo "none of the above"
+    ;;
+  esac
 }
 complete -F __vendor_comp_func vendor
 complete -F __vendor_comp_func ./vendor
