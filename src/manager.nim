@@ -263,17 +263,12 @@ method bin*(this: Manager, app: string, version: string): string {.base.} =
 
 method env*(this: Manager, app: string, version: string): string {.base.} =
   let cmd = this.command(app, "env")
-  let process = this.start(app, cmd, @[version])
-  defer: process.close
-  discard process.waitForExit
-  return ""
-  #let cmd = this.command(app, "env")
-  #let (output, err) = this.exec(app, cmd, @[version])
-  #if err == 0:
-  #  return output
-  #else:
-  #  this.error output
-  #  return ""
+  let (output, err) = this.exec(app, cmd, @[version])
+  if err == 0:
+    return output
+  else:
+    this.error output
+    return ""
 
 method home*(this: Manager, app: string, version: string): string {.base.} =
   let cmd = this.command(app, "home")
