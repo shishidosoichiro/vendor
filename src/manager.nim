@@ -280,8 +280,7 @@ method home*(this: Manager, app: string, version: string): string {.base.} =
     return ""
 
 method installed*(this: Manager, app: string): seq[string] {.base.} =
-  let cmd = this.command(app, "installed")
-  let (output, err) = this.exec(app, cmd)
+  let (output, err) = this.exec(app, "ls", @["versions"])
   if err == 0:
     return output.split('\n').trim.notEmpty
   else:
