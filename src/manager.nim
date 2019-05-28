@@ -271,13 +271,7 @@ method env*(this: Manager, app: string, version: string): string {.base.} =
     return ""
 
 method home*(this: Manager, app: string, version: string): string {.base.} =
-  let cmd = this.command(app, "home")
-  let (output, err) = this.exec(app, cmd, @[version])
-  if err == 0:
-    return output
-  else:
-    this.error output
-    return ""
+  return this.join(app, "versions", version)
 
 method installed*(this: Manager, app: string): seq[string] {.base.} =
   let (output, err) = this.exec(app, "ls", @["versions"])
