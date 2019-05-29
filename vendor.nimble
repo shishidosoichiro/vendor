@@ -12,6 +12,8 @@ bin           = @["vendor"]
 
 requires "nim >= 0.19.2"
 requires "docopt"
+requires "options >= 0.1.0"
+requires "semver >= 1.1.0"
 
 task windows, "build for windows":
   switch("opt", "size")

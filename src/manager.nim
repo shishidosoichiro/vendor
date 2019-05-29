@@ -1,8 +1,11 @@
+import algorithm
 import httpclient
+import options
 import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
 import ospaths
 import osproc
+import semver
 import sequtils
 import streams
 import strformat
@@ -27,6 +30,30 @@ proc notEmpty(s: seq[string]): seq[string] = s.filter(notEmpty)
 proc parseConf(line: string): Conf =
   let sp = line.split(" ")
   return Conf(name: sp[0], url: sp[1])
+
+proc parseVersionOrNot(x: string): Option[Version] =
+  try:
+    return some(v(x))
+  except ParseError:
+    return none(Version)
+
+proc cmpSemver(x, y: string): int =
+  let ovx = parseVersionOrNot(x)
+  let ovy = parseVersionOrNot(y)
+  if ovx.isSome:
+    if ovy.isSome:
+      let vx = ovx.get
+      let vy = ovy.get
+      if vx < vy:
+        return -1
+      elif vx > vy:
+        return 1
+      else:
+        return 0
+    else:
+      return 1
+  else:
+    return cmp(x, y)
 
 proc readAll(stream: Stream) =
   var line: string
@@ -278,13 +305,13 @@ method installed*(this: Manager, app: string): seq[string] {.base.} =
   let path = this.join(app, "versions")
   for fullpath in "{path}/*".fmt.walkDirs():
     versions.add(fullpath.extractFilename)
-  return versions
+  return versions.sorted(cmpSemver)
 
 method versions*(this: Manager, app: string): seq[string] {.base.} =
   let cmd = this.command(app, "versions")
   let (output, err) = this.exec(app, cmd)
   if err == 0:
-    return output.split('\n').trim.notEmpty
+    return output.split('\n').trim.notEmpty.sorted(cmpSemver)
   else:
     this.error output
     return @[]
