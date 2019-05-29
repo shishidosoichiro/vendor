@@ -274,12 +274,11 @@ method home*(this: Manager, app: string, version: string): string {.base.} =
   return this.join(app, "versions", version)
 
 method installed*(this: Manager, app: string): seq[string] {.base.} =
-  let (output, err) = this.exec(app, "ls", @["versions"])
-  if err == 0:
-    return output.split('\n').trim.notEmpty
-  else:
-    if output != "" :this.error output
-    return @[]
+  var versions: seq[string] = @[]
+  let path = this.join(app, "versions")
+  for fullpath in "{path}/*".fmt.walkDirs():
+    versions.add(fullpath.extractFilename)
+  return versions
 
 method versions*(this: Manager, app: string): seq[string] {.base.} =
   let cmd = this.command(app, "versions")
