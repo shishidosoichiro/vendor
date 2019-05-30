@@ -10,7 +10,7 @@ Usage:
   vendor [options] env [<app-and-or-version>...]
   vendor [options] home [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
-  vendor [options] latest [-l|--local] [<app>...]
+  vendor [options] latest [--local] [<app>...]
   vendor [options] ls [-l|--long] [<app>...]
   vendor [options] search <app>
   vendor [options] uninstall [<app-and-or-version>...]
@@ -29,7 +29,6 @@ Options:
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
   -l, --long                with version
-  -r, --remote              from remote.
   -u, --update              update
   -v, --version             Output version
   -y, --yes                 Yes
@@ -39,6 +38,7 @@ Commands:
   env             Output env scripts each application.
   home            Output home directories of applications.
   install         Install applications
+  latest          Output the latest versions of each application
   ls              Output installed versions of each application
   uninstall       Uninstall versions of applications
   versions        Output versions of each applications
@@ -92,7 +92,6 @@ when isMainModule:
   let yes = args["--yes"]
   let long = args["--long"]
   let local = args["--local"]
-  let remote = args["--remote"]
 
   let m = Manager(appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
 
