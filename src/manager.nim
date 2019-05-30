@@ -5,7 +5,6 @@ import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
 import ospaths
 import osproc
-import semver
 import sequtils
 import streams
 import strformat
@@ -13,6 +12,7 @@ import strutils
 import tables
 import uri
 import ./mkdirp
+import ./semverutils
 
 type Manager* = ref object of RootObj
   appsDir*: string
@@ -30,30 +30,6 @@ proc notEmpty(s: seq[string]): seq[string] = s.filter(notEmpty)
 proc parseConf(line: string): Conf =
   let sp = line.split(" ")
   return Conf(name: sp[0], url: sp[1])
-
-proc parseVersionOrNot(x: string): Option[Version] =
-  try:
-    return some(v(x))
-  except ParseError:
-    return none(Version)
-
-proc cmpSemver(x, y: string): int =
-  let ovx = parseVersionOrNot(x)
-  let ovy = parseVersionOrNot(y)
-  if ovx.isSome:
-    if ovy.isSome:
-      let vx = ovx.get
-      let vy = ovy.get
-      if vx < vy:
-        return -1
-      elif vx > vy:
-        return 1
-      else:
-        return 0
-    else:
-      return 1
-  else:
-    return cmp(x, y)
 
 proc readAll(stream: Stream) =
   var line: string
