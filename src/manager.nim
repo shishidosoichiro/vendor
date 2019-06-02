@@ -31,12 +31,6 @@ proc parseConf(line: string): Conf =
   let sp = line.split(" ")
   return Conf(name: sp[0], url: sp[1])
 
-proc readAll(stream: Stream) =
-  var line: string
-  while not line.contains("#done"):
-    line = string(stream.readLine())
-    echo "READ: " & line
-
 method log*(this: Manager, message: string): void {.base.} =
   if this.debug: echo message
 
@@ -87,56 +81,6 @@ method exec*(this: Manager, app, cmd: string, args: openArray[string] = []): (st
     lines.add(string(stream.readLine()))
   let err = process.waitForExit
   return (lines.join("\n"), err)
-
-method download*(this: Manager, url: string): string {.base.} =
-  echo fmt("url: {url}")
-  let basename = url.parseUri.path.extractFilename
-  echo fmt("basename: {basename}")
-  let outputFilename = this.tempDir / basename
-  echo fmt("outputFilename: {outputFilename}")
-  this.join("temp").mkdirp
-  echo fmt("created temp dir.")
-  let http = newHttpClient()
-  http.downloadFile(url, outputFilename)
-  outputFilename
-
-method extract*(this: Manager, src: string): void {.base.} =
-  let tempDir = this.tempDir
-  if src.endsWith(".tar.gz"):
-    let command = fmt("tar -zxvf {src} -C {tempDir}")
-    echo fmt("start {command}")
-    if command.execCmd == 0:
-      return
-    else:
-      return
-  elif src.endsWith("zip"):
-    echo fmt("zip not yet")
-    return
-  else:
-    echo fmt("not supported.")
-    return
-
-method deploy*(this: Manager, app: string, archiveDir: string): void {.base.} =
-  let appDir = this.join(app)
-  mkdirp appDir
-  for kind, path in walkDir(archiveDir):
-    let info = getFileInfo(path)
-    let basename = extractFilename(path)
-    case info.kind:
-      of pcFile:
-        echo fmt("copyFileWithPermissions from {path} to {appDir}")
-        copyFileWithPermissions(path, appDir / basename)
-      of pcLinkToFile:
-        echo fmt("copyFileWithPermissions from {path} to {appDir}")
-        copyFileWithPermissions(path, appDir / basename)
-      of pcDir:
-        echo fmt("copyDirWithPermissions from {path} to {appDir}")
-        mkdirp appDir / basename
-        copyDirWithPermissions(path, appDir / basename)
-      of pcLinkToDir:
-        echo fmt("copyDirWithPermissions from {path} to {appDir}")
-        mkdirp appDir / basename
-        copyDirWithPermissions(path, appDir / basename)
 
 method git*(this: Manager, app, cmd: string, args: openArray[string] = [], options = {poUsePath, poParentStreams}): Process {.base.} =
   this.start(app, "git", concat(@[cmd], @args), options)

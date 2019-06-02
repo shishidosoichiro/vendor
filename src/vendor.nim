@@ -21,7 +21,6 @@ Usage:
   vendor [options] root crobber
   vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
-  vendor [options] util download <url>
 
 Options:
   -a, --apps-dir=DIR        Specify apps home dir
@@ -47,7 +46,6 @@ Commands:
   root crobber    Remove everything
   root exec       Excecute <cmd> on root dirrectory.
   root pull       Update version.txt
-  util download   download url and output downloaded filename.
 
 ::
 """
@@ -218,12 +216,6 @@ when isMainModule:
   # root pull
   elif args["root"] and args["pull"]:
     if not m.pullRoot: quit(QuitFailure)
-
-  # util download
-  elif args["util"] and args["download"]:
-    let url = $args["<url>"]
-    let filename = m.download(url)
-    echo filename
 
   else:
     echo args
