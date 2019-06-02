@@ -20,7 +20,7 @@ type Manager* = ref object of RootObj
   vendorsFile*: string
   debug*: bool
 
-type Conf = ref object of RootObj
+type VendorRecord = ref object of RootObj
   name*: string
   url*: string
 
@@ -28,9 +28,9 @@ proc trim(x: string): string = x.strip
 proc trim(s: seq[string]): seq[string] = s.map(trim)
 proc notEmpty(x: string): bool = x != ""
 proc notEmpty(s: seq[string]): seq[string] = s.filter(notEmpty)
-proc parseConf(line: string): Conf =
+proc parseVendorRecord(line: string): VendorRecord =
   let sp = line.split(" ")
-  return Conf(name: sp[0], url: sp[1])
+  return VendorRecord(name: sp[0], url: sp[1])
 
 method log*(this: Manager, message: string): void {.base.} =
   if this.debug: echo message
@@ -89,25 +89,25 @@ method git*(this: Manager, app, cmd: string, args: openArray[string] = [], optio
 method execGit*(this: Manager, app, cmd: string, args: openArray[string] = []): (string, int) {.base.} =
   this.exec(app, "git", concat(@[cmd], @args))
 
-method loadConfs*(this: Manager): Table[string, Conf] {.base.} =
-  result = initTable[string, Conf]()
-  let confs = this.vendorsFile
+method loadVendorRecords*(this: Manager): Table[string, VendorRecord] {.base.} =
+  result = initTable[string, VendorRecord]()
+  let records = this.vendorsFile
     .readFile
     .split("\n")
     .notEmpty
-    .map(parseConf)
-  for conf in confs:
-    result[conf.name] = conf
+    .map(parseVendorRecord)
+  for record in records:
+    result[record.name] = record
   return result
 
-method loadConf*(this: Manager, app: string): Conf {.base.} =
-  let confs = this.loadConfs
-  if not confs.hasKey(app): return nil
-  return confs[app]
+method loadVendorRecord*(this: Manager, app: string): VendorRecord {.base.} =
+  let records = this.loadVendorRecords
+  if not records.hasKey(app): return nil
+  return records[app]
 
 method search*(this: Manager, word: string): void {.base.} =
-  let confs = this.loadConfs
-  for app in confs.keys:
+  let records = this.loadVendorRecords
+  for app in records.keys:
     if app.contains(word): echo app
 
 method cloneRoot*(this: Manager): bool {.base.} =
@@ -144,14 +144,14 @@ method clone*(this: Manager, app: string): bool {.base.} =
   var options = {poUsePath, poParentStreams}
   if not this.debug: options = {poUsePath}
 
-  let conf = this.loadConf(app)
-  if conf == nil:
+  let record = this.loadVendorRecord(app)
+  if record == nil:
     this.log fmt("Specified application is not found: app={app}")
     return false
 
-  this.log fmt("{app} is found. url={conf.url}")
+  this.log fmt("{app} is found. url={record.url}")
   this.log fmt"Cloning version manger of {app}..."
-  let process = this.git(".", "clone", @[conf.url, app], options)
+  let process = this.git(".", "clone", @[record.url, app], options)
   defer: process.close
   let ret = process.waitForExit
   if ret != 0: return false
