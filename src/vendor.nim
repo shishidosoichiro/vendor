@@ -23,7 +23,7 @@ Usage:
   vendor [options] root pull
 
 Options:
-  -a, --apps-dir=DIR        Specify apps home dir
+  -a, --home-dir=DIR        Specify vendor home dir
   -d, --debug               Debug mode
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
@@ -77,13 +77,15 @@ proc atmark(s: seq[string], x: string): seq[string] =
 when isMainModule:
   let args = docopt(doc, version = "Vendor 0.1.1")
 
-  var appsDir = $args["--apps-dir"]
-  if appsDir == "nil":
-    appsDir = getEnv("VENDOR_APPS_DIR", getHomeDir() / ".vendor")
+  var homeDir = $args["--home-dir"]
+  if homeDir == "nil":
+    homeDir = getEnv("VENDOR_HOME_DIR", getHomeDir() / ".vendor")
+
+  let appsDir = homeDir / "apps"
 
   var vendorsFile = $args["--vendors-list"]
   if vendorsFile == "nil":
-    vendorsFile = getEnv("VENDOR_LIST", appsDir / "vendors.txt")
+    vendorsFile = getEnv("VENDOR_LIST", homeDir / "vendors.txt")
 
   let debug = args["--debug"]
   let update = args["--update"]
@@ -91,7 +93,7 @@ when isMainModule:
   let long = args["--long"]
   let local = args["--local"]
 
-  let m = Manager(appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
+  let m = Manager(homeDir: homeDir, appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
 
   proc apps(defaults: seq[string]): seq[string] =
     if defaults.len == 0: m.apps

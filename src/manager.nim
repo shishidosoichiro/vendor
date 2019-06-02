@@ -15,6 +15,7 @@ import ./mkdirp
 import ./semverutils
 
 type Manager* = ref object of RootObj
+  homeDir*: string
   appsDir*: string
   vendorsFile*: string
   debug*: bool
@@ -113,14 +114,15 @@ method cloneRoot*(this: Manager): bool {.base.} =
   var options = {poUsePath, poParentStreams}
   if not this.debug: options = {poUsePath}
 
-  this.log "Cloning version.txt..."
-  let (head, dirname) = this.appsDir.splitPath
+  this.log "Cloning vendor-home..."
+  let (head, dirname) = this.homeDir.splitPath
   let url = "https://github.com/shishidosoichiro/vendor-home.git"
   let process = this.git("..", "clone", @[url, dirname], options)
   defer: process.close
   let ret = process.waitForExit
   if ret != 0: return false
-  this.log "Cloning version.txt is done."
+  this.log "Cloning vendor-home is done."
+  mkdirp(this.appsDir)
   return true
 
 method pullRoot*(this: Manager): bool {.base.} =
@@ -130,12 +132,12 @@ method pullRoot*(this: Manager): bool {.base.} =
   if not this.existsDir("."):
     return this.cloneRoot()
 
-  this.log "Updating version.txt..."
+  this.log "Updating vendor-home..."
   let process = this.git(".", "pull", options = options)
   defer: process.close
   let ret = process.waitForExit
   if ret != 0: return false
-  this.log fmt"Updating version.txt is done."
+  this.log fmt"Updating vendor-home is done."
   return true
 
 method clone*(this: Manager, app: string): bool {.base.} =
@@ -194,7 +196,7 @@ method init*(this: Manager, app: string): bool {.base.} =
 method apps*(this: Manager): seq[string] {.base.} =
   let (output, err) = this.exec(".", "ls", ["-1"])
   if err == 0:
-    return output.split('\n').trim.notEmpty.filter(proc(x: string): bool = x != "vendors.txt")
+    return output.split('\n').trim.notEmpty
   else:
     this.error output
     return @[]
