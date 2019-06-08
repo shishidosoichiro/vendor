@@ -7,6 +7,7 @@ Usage:
   vendor (-h|--help)
   vendor (-v|--version)
   vendor [options] bin [<app-and-or-version>...]
+  vendor [options] completion <shell>
   vendor [options] env [<app-and-or-version>...]
   vendor [options] home [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
@@ -36,6 +37,7 @@ Options:
 
 Commands:
   bin             Output bin directories of applications with ':' delimited.
+  completion      Output completion script. `source <(vendor completion bash)`
   env             Output env scripts each application.
   home            Output home directories of applications.
   install         Install applications
@@ -53,6 +55,7 @@ Commands:
 
 ::
 """
+const completion = staticRead("../completion.bash")
 
 import docopt
 import os
@@ -138,6 +141,10 @@ proc main(): int =
         result = QuitFailure
         continue
       echo output
+
+  # bin
+  elif args["completion"]:
+    stdout.write(completion)
 
   # env
   elif args["env"] and not args["util"]:
@@ -318,4 +325,4 @@ proc main(): int =
     echo args
 
 when isMainModule:
-  quit(main())
+  discard main()

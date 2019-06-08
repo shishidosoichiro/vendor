@@ -1,4 +1,3 @@
-# source ./vendor-completion.bash
 __vendor_comp_func () {
   local vendor=${COMP_WORDS[0]}
   local subcommand1=${COMP_WORDS[1]}
@@ -8,7 +7,7 @@ __vendor_comp_func () {
   if [ $COMP_CWORD = 0 ]; then
     continue;
   elif [ $COMP_CWORD = 1 ]; then
-    COMPREPLY=($(compgen -W "bin env home install latest ls search uninstall versions manager root util" -- "${cur}"))
+    COMPREPLY=($(compgen -W "bin completion env home install latest ls search uninstall versions manager root util" -- "${cur}"))
   elif [ $COMP_CWORD = 2 ]; then
     case "$subcommand1" in
       "manager")
@@ -20,7 +19,7 @@ __vendor_comp_func () {
       "util")
         COMPREPLY=($(compgen -W "bin env" -- "${cur}"))
       ;;
-      "bin"|"env"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions")
+      "bin"|"env"|"completion"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions")
         apps=$($vendor ls)
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
       ;;
@@ -42,6 +41,9 @@ __vendor_comp_func () {
             COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
           ;;
         esac
+      ;;
+      "completion")
+        COMPREPLY=($(compgen -W "bash" -- "${cur}"))
       ;;
       "bin"|"env"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions")
         apps=$($vendor ls)
