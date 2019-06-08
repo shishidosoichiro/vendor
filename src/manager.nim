@@ -14,6 +14,7 @@ import uri
 import ./mkdirp
 import ./root
 import ./semverutils
+import ./utils
 
 type Manager* = ref object of RootObj
   root*: Root
@@ -42,8 +43,8 @@ method join*(this: Manager, paths: varargs[string]): string {.base.} =
 method tempDir*(this: Manager): string {.base.} =
   this.root.join("temp")
 
-method exists*(this: Manager): bool {.base.} =
-  this.root.exists(this.name)
+method exists*(this: Manager, paths: varargs[string]): bool {.base.} =
+  this.root.exists(this.name, paths)
 
 method start*(this: Manager, cmd: string, args: openArray[string] = [], options = {poUsePath, poParentStreams}): Process {.base.} =
   this.root.start(this.name, cmd, args, options)
@@ -95,8 +96,13 @@ method init*(this: Manager): bool {.base.} =
   this.log fmt"Initializing version manger of {this.name} is done."
   return true
 
+method home*(this: Manager, version: string): string {.base.} =
+  return this.join("versions", version)
+
 method bin*(this: Manager, version: string): string {.base.} =
   let cmd = command("bin")
+  if not this.exists(cmd):
+    return utils.bin(this.home(version))
   let (output, err) = this.exec(cmd, @[version])
   if err == 0:
     return output
@@ -106,15 +112,14 @@ method bin*(this: Manager, version: string): string {.base.} =
 
 method env*(this: Manager, version: string): string {.base.} =
   let cmd = command("env")
+  if not this.exists(cmd):
+    return utils.env(this.join(), this.bin(version))
   let (output, err) = this.exec(cmd, @[version])
   if err == 0:
     return output
   else:
     this.error output
     return ""
-
-method home*(this: Manager, version: string): string {.base.} =
-  return this.join("versions", version)
 
 method installed*(this: Manager): seq[string] {.base.} =
   var versions: seq[string] = @[]

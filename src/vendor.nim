@@ -21,6 +21,8 @@ Usage:
   vendor [options] root crobber
   vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
+  vendor [options] util bin <home>
+  vendor [options] util env <manager-dir> <bin>
 
 Options:
   -a, --home-dir=DIR        Specify vendor home dir
@@ -45,7 +47,9 @@ Commands:
   manager pull    Download specified application version managers.
   root crobber    Remove everything
   root exec       Excecute <cmd> on root dirrectory.
-  root pull       Update version.txt
+  root pull       Update version.txt.
+  util bin        Output default bin path.
+  util env        Output default env script.
 
 ::
 """
@@ -64,7 +68,7 @@ import system
 import ./manager
 import ./parse
 import ./root
-#import ./pipe
+import ./utils
 
 proc atmark(x: string, y: string): string =
   fmt("{x}@{y}")
@@ -119,7 +123,7 @@ proc main(): int =
     else: defaults
 
   # bin
-  if args["bin"]:
+  if args["bin"] and not args["util"]:
     if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
@@ -136,7 +140,7 @@ proc main(): int =
       echo output
 
   # env
-  elif args["env"]:
+  elif args["env"] and not args["util"]:
     if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
@@ -298,6 +302,17 @@ proc main(): int =
   # root pull
   elif args["root"] and args["pull"]:
     if not root.pull: quit(QuitFailure)
+
+  # util bin
+  elif args["util"] and args["bin"]:
+    let home = $args["<home>"]
+    echo utils.bin(home)
+
+  # util env
+  elif args["util"] and args["env"]:
+    let managerDir = $args["<manager-dir>"]
+    let bin = $args["<bin>"]
+    echo utils.env(managerDir, bin)
 
   else:
     echo args
