@@ -3,7 +3,6 @@ import httpclient
 import options
 import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
-import ospaths
 import osproc
 import sequtils
 import streams

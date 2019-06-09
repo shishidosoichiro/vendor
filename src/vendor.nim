@@ -59,7 +59,6 @@ const completion = staticRead("../completion.bash")
 
 import docopt
 import os
-import ospaths
 import osproc
 import sequtils
 import strformat
