@@ -1,4 +1,4 @@
-export tag=0.1.1
+export tag=$(shell nimble version | grep -v Executing)
 
 os=$(shell if uname -s | grep -qi MINGW64; then echo windows; elif uname -s | grep -qi MSYS; then echo windows; elif uname -s | grep -qi Darwin; then echo darwin; else echo linux; fi)
 ext=$(shell if [ $(os) = windows ]; then echo .exe; fi)

@@ -55,6 +55,9 @@ Commands:
 
 ::
 """
+const versionInfo = "Vendor " & staticExec("cd .. && (nimble version | grep -v Executing)") &
+                  "\nRevision " & staticExec("git rev-parse HEAD") &
+                  "\nCompiled on " & staticExec("uname -v")
 const completion = staticRead("../completion.bash")
 
 import docopt
@@ -100,7 +103,7 @@ proc load(root: Root, app: string, update: bool): Manager =
   return manager
 
 proc main(): int =
-  let args = docopt(doc, version = "Vendor 0.1.1")
+  let args = docopt(doc, version = versionInfo)
 
   var homeDir = $args["--home-dir"]
   if homeDir == "nil":

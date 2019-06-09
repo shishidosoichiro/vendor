@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.1"
+version       = "0.2.0"
 author        = "Soichiro Shishido"
 description   = "app and version vendor"
 license       = "MIT"
@@ -11,12 +11,9 @@ bin           = @["vendor"]
 # Dependencies
 
 requires "nim >= 0.19.2"
-requires "docopt"
+requires "docopt >= 0.6.8"
 requires "options >= 0.1.0"
 requires "semver >= 1.1.0"
 
-task windows, "build for windows":
-  switch("opt", "size")
-  switch("define", "ssl")
-  switch("define", "mingw")
-  setCommand "build"
+task version, "output version":
+  echo version
