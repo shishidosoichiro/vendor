@@ -1,5 +1,4 @@
-from os import existsOrCreateDir
-import ospaths
+import os
 import sequtils
 import strutils
 

@@ -7,10 +7,11 @@ Usage:
   vendor (-h|--help)
   vendor (-v|--version)
   vendor [options] bin [<app-and-or-version>...]
+  vendor [options] completion <shell>
   vendor [options] env [<app-and-or-version>...]
   vendor [options] home [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
-  vendor [options] latest [-l|--local] [<app>...]
+  vendor [options] latest [--local] [<app>...]
   vendor [options] ls [-l|--long] [<app>...]
   vendor [options] search <app>
   vendor [options] uninstall [<app-and-or-version>...]
@@ -21,24 +22,26 @@ Usage:
   vendor [options] root crobber
   vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
-  vendor [options] util download <url>
+  vendor [options] util bin <home>
+  vendor [options] util env <manager-dir> <bin>
 
 Options:
-  -a, --apps-dir=DIR        Specify apps home dir
+  -a, --home-dir=DIR        Specify vendor home dir
   -d, --debug               Debug mode
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
   -l, --long                with version
-  -r, --remote              from remote.
   -u, --update              update
   -v, --version             Output version
   -y, --yes                 Yes
 
 Commands:
   bin             Output bin directories of applications with ':' delimited.
+  completion      Output completion script. `source <(vendor completion bash)`
   env             Output env scripts each application.
   home            Output home directories of applications.
   install         Install applications
+  latest          Output the latest versions of each application
   ls              Output installed versions of each application
   uninstall       Uninstall versions of applications
   versions        Output versions of each applications
@@ -46,15 +49,19 @@ Commands:
   manager pull    Download specified application version managers.
   root crobber    Remove everything
   root exec       Excecute <cmd> on root dirrectory.
-  root pull       Update version.txt
-  util download   download url and output downloaded filename.
+  root pull       Update version.txt.
+  util bin        Output default bin path.
+  util env        Output default env script.
 
 ::
 """
+const versionInfo = "Vendor " & staticExec("cd .. && (nimble version | grep -v Executing)") &
+                  "\nRevision " & staticExec("git rev-parse HEAD") &
+                  "\nCompiled on " & staticExec("uname -v")
+const completion = staticRead("../completion.bash")
 
 import docopt
 import os
-import ospaths
 import osproc
 import sequtils
 import strformat
@@ -65,7 +72,8 @@ import system
 #import yaml/serialization
 import ./manager
 import ./parse
-#import ./pipe
+import ./root
+import ./utils
 
 proc atmark(x: string, y: string): string =
   fmt("{x}@{y}")
@@ -76,157 +84,247 @@ proc atmark(x: string): (proc(t: string): string) =
 proc atmark(s: seq[string], x: string): seq[string] =
   s.map(atmark(x))
 
-when isMainModule:
-  let args = docopt(doc, version = "Vendor 0.1.1")
+proc echoError*(message: string): void =
+  stderr.writeLine(message)
 
-  var appsDir = $args["--apps-dir"]
-  if appsDir == "nil":
-    appsDir = getEnv("VENDOR_APPS_DIR", getHomeDir() / ".vendor")
+proc load(root: Root, app: string, update: bool): Manager =
+  let manager = root.newManager(app)
+  if not manager.exists:
+    if manager.url == "":
+      echoError "{app}: not found in vendors.txt".fmt
+      return nil
+    if not manager.clone:
+      echoError "{app}: failed to clone its manager. url: {manager.url}".fmt
+      return nil
+  elif update:
+    if not manager.pull:
+      echoError "{app}: failed to pull its manager. url: {manager.url}".fmt
+      return nil
+  return manager
+
+proc main(): int =
+  let args = docopt(doc, version = versionInfo)
+
+  var homeDir = $args["--home-dir"]
+  if homeDir == "nil":
+    homeDir = getEnv("VENDOR_HOME_DIR", getHomeDir() / ".vendor")
+
+  let appsDir = homeDir / "apps"
 
   var vendorsFile = $args["--vendors-list"]
   if vendorsFile == "nil":
-    vendorsFile = getEnv("VENDOR_LIST", appsDir / "vendors.txt")
+    vendorsFile = getEnv("VENDOR_LIST", homeDir / "vendors.txt")
 
   let debug = args["--debug"]
   let update = args["--update"]
   let yes = args["--yes"]
   let long = args["--long"]
   let local = args["--local"]
-  let remote = args["--remote"]
 
-  let m = Manager(appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
+  let root = Root(homeDir: homeDir, appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
 
   proc apps(defaults: seq[string]): seq[string] =
-    if defaults.len == 0: m.apps
+    if defaults.len == 0: root.apps
     else: defaults
 
   # bin
-  if args["bin"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+  if args["bin"] and not args["util"]:
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      if version == "latest": version = m.latest(app, local = true)
-      echo m.bin(app, version)
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      if version == "latest": version = manager.latest(local = true)
+      let output = manager.bin(version)
+      if output == "":
+        echoError "{app}: \"bin\" failed.".fmt
+        result = QuitFailure
+        continue
+      echo output
+
+  # bin
+  elif args["completion"]:
+    stdout.write(completion)
 
   # env
-  elif args["env"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+  elif args["env"] and not args["util"]:
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      if version == "latest": version = m.latest(app, local = true)
-      echo m.env(app, version)
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      if version == "latest": version = manager.latest(local = true)
+      let output = manager.env(version)
+      if output == "":
+        echoError "{app}: \"env\" failed.".fmt
+        result = QuitFailure
+        continue
+      echo output
 
   # home
   elif args["home"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      if version == "latest": version = m.latest(app, local = true)
-      echo m.home(app, version)
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      if version == "latest": version = manager.latest(local = true)
+      let output = manager.home(version)
+      if output == "":
+        echoError "{app}: \"home\" failed.".fmt
+        result = QuitFailure
+        continue
+      echo output
 
   # install
   elif args["install"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      if version == "latest": version = m.latest(app)
-      m.install(app, version)
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      if version == "latest": version = manager.latest
+      manager.install(version)
 
   # latest
   elif args["latest"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for app in apps(@(args["<app>"])):
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      let latest = m.latest(app, local)
-      if latest != "": echo atmark(app, latest)
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      let latest = manager.latest(local)
+      if latest == "":
+        echoError "{app}: lat\"est\" failed.".fmt
+        result = QuitFailure
+        continue
+      echo atmark(app, latest)
 
   # ls
   elif args["ls"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     let apps = apps(@(args["<app>"]))
     if long:
       for app in apps(@(args["<app>"])):
-        if (not m.exists(app) or update) and not m.pull(app): continue
-        let output = m.installed(app).atmark(app).join("\n")
-        if output != "": echo output
+        let manager = root.load(app, update)
+        if manager == nil:
+          result = QuitFailure
+          continue
+        let output = manager.installed.atmark(app).join("\n")
+        if output == "":
+          echoError "{app}: \"installed\" failed.".fmt
+          result = QuitFailure
+          continue
+        echo output
     else:
       if apps.len > 0: echo apps.join("\n")
 
   # search
   elif args["search"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
-    m.search($args["<app>"])
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
+    root.search($args["<app>"])
 
   # uninstall
   elif args["uninstall"]:
-    if update and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      if version == "latest": version = m.latest(app, local = true)
-      if version == "": continue
-      m.uninstall(app, version)
+      let manager = root.newManager(app)
+      if (not manager.exists):
+        echoError "{app}: not installed.".fmt
+        result = QuitFailure
+        continue
+      if not manager.home(version).existsDir:
+        echoError "{appver}: not installed.".fmt
+        result = QuitFailure
+        continue
+
+      echo "removing {appver}...".fmt
+      manager.uninstall(version)
+      echo "removing {appver} is done.".fmt
 
   # versions
   elif args["versions"]:
-    if (not m.exists or update) and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for app in apps(@(args["<app>"])):
-      if (not m.exists(app) or update) and not m.pull(app): continue
-      let output = m.versions(app).atmark(app).join("\n")
-      if output != "": echo output
+      let manager = root.load(app, update)
+      if manager == nil:
+        result = QuitFailure
+        continue
+      let output = manager.versions.atmark(app).join("\n")
+      if output == "":
+        echoError "{app}: \"versions\" failed.".fmt
+        result = QuitFailure
+        continue
+      echo output
 
   # manager exec
   elif args["manager"] and args["exec"]:
-    if update and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     let app = $args["<app>"]
     let cmd = $args["<cmd>"]
     let cmdargs = @(args["<args>"])
-    let process = m.start(app, cmd, cmdargs)
+    let manager = root.newManager(app)
+    let process = manager.start(cmd, cmdargs)
     defer: process.close
     #await (process > stdout) and (process.errorStream > stderr)
-    discard process.waitForExit
+    result = process.waitForExit
 
   # manager init
   elif args["manager"] and args["init"]:
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     let app = $args["<app>"]
-    if update and not m.pullRoot: quit(QuitFailure)
-    discard m.init(app)
+    let manager = root.newManager(app)
+    if update and not root.pull: quit(QuitFailure)
+    discard manager.init
 
   # manager pull
   elif args["manager"] and args["pull"]:
-    if update and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     for app in apps(@(args["<app>"])):
-      if m.pull(app): continue
+      let manager = root.newManager(app)
+      if manager.pull: continue
 
   # root crobber
   elif args["root"] and args["crobber"]:
-    m.crobber
+    root.crobber
 
   # root exec
   elif args["root"] and args["exec"]:
-    if update and not m.pullRoot: quit(QuitFailure)
+    if (not root.exists or update) and not root.pull: quit(QuitFailure)
     let cmd = $args["<cmd>"]
     let cmdargs = @(args["<args>"])
-    let process = m.start(".", cmd, cmdargs)
+    let process = root.start(".", cmd, cmdargs)
     defer: process.close
     #await (process > stdout) and (process.errorStream > stderr)
-    discard process.waitForExit
+    result = process.waitForExit
 
   # root pull
   elif args["root"] and args["pull"]:
-    if not m.pullRoot: quit(QuitFailure)
+    if not root.pull: quit(QuitFailure)
 
-  # util download
-  elif args["util"] and args["download"]:
-    let url = $args["<url>"]
-    let filename = m.download(url)
-    echo filename
+  # util bin
+  elif args["util"] and args["bin"]:
+    let home = $args["<home>"]
+    echo utils.bin(home)
+
+  # util env
+  elif args["util"] and args["env"]:
+    let managerDir = $args["<manager-dir>"]
+    let bin = $args["<bin>"]
+    echo utils.env(managerDir, bin)
 
   else:
     echo args
 
-  quit(QuitSuccess)
+when isMainModule:
+  discard main()
