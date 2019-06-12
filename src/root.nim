@@ -51,8 +51,11 @@ method join*(this: Root, app: string, paths: varargs[string]): string {.base.} =
 method tempDir*(this: Root): string {.base.} =
   this.join("temp")
 
-method exists*(this: Root, app: string = ".", paths: varargs[string]): bool {.base.} =
+method existsDir*(this: Root, app: string = ".", paths: varargs[string]): bool {.base.} =
   this.join(app, paths).existsDir
+
+method existsFile*(this: Root, app: string = ".", paths: varargs[string]): bool {.base.} =
+  this.join(app, paths).existsFile
 
 method start*(this: Root, app, cmd: string, args: openArray[string] = [], options = {poUsePath, poParentStreams}): Process {.base.} =
   let workingDir = this.join(app)
@@ -122,7 +125,7 @@ method pull*(this: Root): bool {.base.} =
   var options = {poUsePath, poParentStreams}
   if not this.debug: options = {poUsePath}
 
-  if not this.exists:
+  if not this.existsDir:
     return this.clone()
 
   this.log "Updating vendor-home..."
