@@ -16,7 +16,9 @@ build:
 	ls -lh ./vendor$(ext)
 
 install:
-	$(time) nimble install -y --debug
+	#$(time) nimble install -y --debug
+	mkdir -p ~/bin
+	cp -pr dist/vendor-$(tag)-darwin-amd64/vendor ~/bin
 	ls -lLh $(shell which vendor)
 
 test:
