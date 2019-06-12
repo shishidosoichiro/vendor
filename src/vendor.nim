@@ -1,7 +1,7 @@
 let doc = """
 ::
 
-    vendor
+    vendor - DIY Application Version Manager
 
 Usage:
   vendor (-h|--help)
