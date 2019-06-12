@@ -7,3 +7,4 @@
 /tests/test_normalize_path
 
 /dist
+.env
