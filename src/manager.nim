@@ -42,8 +42,11 @@ method join*(this: Manager, paths: varargs[string]): string {.base.} =
 method tempDir*(this: Manager): string {.base.} =
   this.root.join("temp")
 
-method exists*(this: Manager, paths: varargs[string]): bool {.base.} =
-  this.root.exists(this.name, paths)
+method existsDir*(this: Manager, paths: varargs[string]): bool {.base.} =
+  this.root.existsDir(this.name, paths)
+
+method existsFile*(this: Manager, paths: varargs[string]): bool {.base.} =
+  this.root.existsFile(this.name, paths)
 
 method start*(this: Manager, cmd: string, args: openArray[string] = [], options = {poUsePath, poParentStreams}): Process {.base.} =
   this.root.start(this.name, cmd, args, options)
@@ -76,7 +79,7 @@ method pull*(this: Manager): bool {.base.} =
   return true
 
 method init*(this: Manager): bool {.base.} =
-  if this.exists:
+  if this.existsDir:
     this.log fmt("Specified application is not found: app={this.name}")
     return false
 
@@ -100,7 +103,7 @@ method home*(this: Manager, version: string): string {.base.} =
 
 method bin*(this: Manager, version: string): string {.base.} =
   let cmd = command("bin")
-  if not this.exists(cmd):
+  if not this.existsFile(cmd):
     return utils.bin(this.home(version))
   let (output, err) = this.exec(cmd, @[version])
   if err == 0:
@@ -111,7 +114,7 @@ method bin*(this: Manager, version: string): string {.base.} =
 
 method env*(this: Manager, version: string): string {.base.} =
   let cmd = command("env")
-  if not this.exists(cmd):
+  if not this.existsFile(cmd):
     return utils.env(this.join(), this.bin(version))
   let (output, err) = this.exec(cmd, @[version])
   if err == 0:
