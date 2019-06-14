@@ -6,5 +6,5 @@
 /tests/test_pipe
 /tests/test_normalize_path
 
-/dist
+/dist*
 .env
