@@ -129,7 +129,7 @@ proc main(): int =
 
   # bin
   if args["bin"] and not args["util"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
@@ -150,7 +150,7 @@ proc main(): int =
 
   # env
   elif args["env"] and not args["util"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
@@ -167,7 +167,7 @@ proc main(): int =
 
   # home
   elif args["home"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
@@ -184,7 +184,7 @@ proc main(): int =
 
   # install
   elif args["install"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
@@ -196,7 +196,7 @@ proc main(): int =
 
   # latest
   elif args["latest"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for app in apps(@(args["<app>"])):
       let manager = root.load(app, update)
       if manager == nil:
@@ -211,7 +211,7 @@ proc main(): int =
 
   # ls
   elif args["ls"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     let apps = apps(@(args["<app>"]))
     if long:
       for app in apps(@(args["<app>"])):
@@ -230,12 +230,12 @@ proc main(): int =
 
   # search
   elif args["search"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     root.search($args["<app>"])
 
   # uninstall
   elif args["uninstall"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for appver in apps(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.newManager(app)
@@ -254,7 +254,7 @@ proc main(): int =
 
   # versions
   elif args["versions"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for app in apps(@(args["<app>"])):
       let manager = root.load(app, update)
       if manager == nil:
@@ -269,7 +269,7 @@ proc main(): int =
 
   # manager exec
   elif args["manager"] and args["exec"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     let app = $args["<app>"]
     let cmd = $args["<cmd>"]
     let cmdargs = @(args["<args>"])
@@ -281,15 +281,15 @@ proc main(): int =
 
   # manager init
   elif args["manager"] and args["init"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     let app = $args["<app>"]
     let manager = root.newManager(app)
-    if update and not root.pull: quit(QuitFailure)
+    if update and not root.pull: return QuitFailure
     discard manager.init
 
   # manager pull
   elif args["manager"] and args["pull"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     for app in apps(@(args["<app>"])):
       let manager = root.newManager(app)
       if manager.pull: continue
@@ -300,7 +300,7 @@ proc main(): int =
 
   # root exec
   elif args["root"] and args["exec"]:
-    if (not root.existsDir or update) and not root.pull: quit(QuitFailure)
+    if (not root.existsDir or update) and not root.pull: return QuitFailure
     let cmd = $args["<cmd>"]
     let cmdargs = @(args["<args>"])
     let process = root.start(".", cmd, cmdargs)
@@ -310,7 +310,7 @@ proc main(): int =
 
   # root pull
   elif args["root"] and args["pull"]:
-    if not root.pull: quit(QuitFailure)
+    if not root.pull: return QuitFailure
 
   # util bin
   elif args["util"] and args["bin"]:
@@ -327,4 +327,5 @@ proc main(): int =
     echo args
 
 when isMainModule:
-  discard main()
+  let returnCode = main()
+  quit(returnCode)
