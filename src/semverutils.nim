@@ -6,6 +6,8 @@ proc parseVersionOrNot(x: string): Option[Version] =
     return some(v(x))
   except ParseError:
     return none(Version)
+  except FieldError:
+    return none(Version)
 
 proc cmpSemver*(x, y: string): int =
   let ovx = parseVersionOrNot(x)

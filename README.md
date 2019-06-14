@@ -4,24 +4,31 @@ DIY Application Version Manager
 
 ## Install vendor
 
-```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-linux-amd64.tar.gz
-tar -xvzf vendor-0.1.1-linux-amd64.tar.gz
-mv ./vendor-0.1.1-linux-amd64/vendor /usr/local/bin
-```
+### Linux
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-darwin-amd64.tar.gz
-tar -xvzf vendor-0.1.1-darwin-amd64.tar.gz
-mv ./vendor-0.1.1-darwin-amd64/vendor /usr/local/bin
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-linux-amd64.tar.gz
+tar -xvzf vendor-0.2.2-linux-amd64.tar.gz
+mv ./vendor-0.2.2-linux-amd64/vendor /usr/local/bin
+echo ". <(vendor completion bash)" >> .bashrc
 ```
 
+### Mac OS
+
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.1.1/vendor-0.1.1-windows-amd64.zip" --output - > vendor-0.1.1-windows-amd64.zip
-unzip vendor-0.1.1-windows-amd64.zip
-cp -pr ./vendor-0.1.1-windows-amd64/vendor ~/bin
-cp -pr vendor-0.1.1-windows-amd64/vendor-completion.bash ~/bin
-echo "source ~/bin/vendor-completion.bash" >> .bashrc
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-darwin-amd64.tar.gz
+tar -xvzf vendor-0.2.2-darwin-amd64.tar.gz
+mv ./vendor-0.2.2-darwin-amd64/vendor /usr/local/bin
+echo ". <(vendor completion bash)" >> .bashrc
+```
+
+### Windows
+
+```
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-windows-amd64.zip" --output - > vendor-0.2.2-windows-amd64.zip
+unzip vendor-0.2.2-windows-amd64.zip
+cp -pr ./vendor-0.2.2-windows-amd64/vendor ~/bin
+echo ". <(vendor completion bash)" >> .bashrc
 ```
 
 ## Install applications
@@ -34,6 +41,7 @@ vendor install nim node duktape
 
 ```
 eval $(vendor env)
+. <(vendor env)
 ```
 
 
@@ -42,7 +50,7 @@ eval $(vendor env)
 ```
 ::
 
-    vendor
+    vendor - DIY Application Version Manager
 
 Usage:
   vendor (-h|--help)

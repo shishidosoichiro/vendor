@@ -99,17 +99,17 @@ method init*(this: Manager): bool {.base.} =
   return true
 
 method home*(this: Manager, version: string): string {.base.} =
-  return this.join("versions", version)
+  return this.join("versions", version).trim
 
 method bin*(this: Manager, version: string): string {.base.} =
   let cmd = command("bin")
   if not this.existsFile(cmd):
-    return utils.bin(this.home(version))
+    return utils.bin(this.home(version)).trim
   let (output, err) = this.exec(cmd, @[version])
   if err == 0:
-    return output
+    return output.trim
   else:
-    this.error output
+    this.error output.trim
     return ""
 
 method env*(this: Manager, version: string): string {.base.} =

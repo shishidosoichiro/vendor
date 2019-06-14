@@ -1,3 +1,6 @@
+export github_api_token=
+export owner=shishidosoichiro
+export repo=vendor
 export tag=$(shell nimble version | grep -v Executing)
 
 os=$(shell if uname -s | grep -qi MINGW64; then echo windows; elif uname -s | grep -qi MSYS; then echo windows; elif uname -s | grep -qi Darwin; then echo darwin; else echo linux; fi)
@@ -21,6 +24,9 @@ install:
 	cp -pr dist/vendor-$(tag)-darwin-amd64/vendor ~/bin
 	ls -lLh $(shell which vendor)
 
+release:
+	$(time) make release -e -f build/Makefile.$(os)
+
 test:
 	$(time) nimble test
 
@@ -31,12 +37,12 @@ clean:
 	rm -rf ./dist/*
 
 windows:
-	$(time) make -e windows -f build/Makefile.$(os)
+	$(time) make windows -e -f build/Makefile.$(os)
 
 linux:
-	$(time) make -e linux -f build/Makefile.$(os)
+	$(time) make linux -e -f build/Makefile.$(os)
 
 darwin:
-	$(time) make -e darwin -f build/Makefile.$(os)
+	$(time) make darwin -e -f build/Makefile.$(os)
 
 .PHONY: build
