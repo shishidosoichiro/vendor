@@ -19,9 +19,26 @@ __vendor_comp_func () {
       "util")
         COMPREPLY=($(compgen -W "bin env" -- "${cur}"))
       ;;
-      "bin"|"env"|"completion"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions")
+      "latest"|"ls"|"search"|"versions")
         apps=$($vendor ls)
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+      ;;
+      "install")
+        apps=$($vendor ls)
+        COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+      ;;
+      "bin"|"env"|"home"|"uninstall")
+        if [ "${prev}" = "@" ]; then
+          local app=${COMP_WORDS[COMP_CWORD-2]}
+          versions=$($vendor ls -l $app | sed -e "s|^$app@||");
+          COMPREPLY=($(compgen -W "$versions" -- "${cur}" | sed -e 's|^|@|'));
+        elif [ "${cur}" = "@" ]; then
+          versions=$($vendor ls -l $prev | sed -e "s|^$prev@||");
+          COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
+        else
+          apps=$($vendor ls);
+          COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
+        fi
       ;;
     esac
   else
@@ -45,9 +62,26 @@ __vendor_comp_func () {
       "completion")
         COMPREPLY=($(compgen -W "bash" -- "${cur}"))
       ;;
-      "bin"|"env"|"home"|"install"|"latest"|"ls"|"search"|"uninstall"|"versions")
+      "latest"|"ls"|"search"|"versions")
         apps=$($vendor ls)
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+      ;;
+      "install")
+        apps=$($vendor ls)
+        COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+      ;;
+      "bin"|"env"|"home"|"uninstall")
+        if [ "${prev}" = "@" ]; then
+          local app=${COMP_WORDS[COMP_CWORD-2]}
+          versions=$($vendor ls -l $app | sed -e "s|^$app@||");
+          COMPREPLY=($(compgen -W "$versions" -- "${cur}" | sed -e 's|^|@|'));
+        elif [ "${cur}" = "@" ]; then
+          versions=$($vendor ls -l $prev | sed -e "s|^$prev@||");
+          COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
+        else
+          apps=$($vendor ls);
+          COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
+        fi
       ;;
     esac
   fi;
