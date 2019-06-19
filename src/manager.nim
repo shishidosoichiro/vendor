@@ -4,6 +4,7 @@ import options
 import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
 import osproc
+import re
 import sequtils
 import streams
 import strformat
@@ -25,6 +26,9 @@ proc trim(x: string): string = x.strip
 proc trim(s: seq[string]): seq[string] = s.map(trim)
 proc notEmpty(x: string): bool = x != ""
 proc notEmpty(s: seq[string]): seq[string] = s.filter(notEmpty)
+proc convertToShellPath(x: string): string =
+  x.replace("\\", "/")
+  .replacef(re"^([a-zA-Z])\:", "/$1")
 
 proc command(cmd: string): string =
   when defined(windows): joinPath("bin", cmd & ".cmd")
@@ -98,25 +102,29 @@ method init*(this: Manager): bool {.base.} =
   this.log fmt"Initializing version manger of {this.name} is done."
   return true
 
-method home*(this: Manager, version: string): string {.base.} =
-  return this.join("versions", version).trim
+method home*(this: Manager, version: string, shell = false): string {.base.} =
+  result = this.join("versions", version).trim
+  if shell: result = result.convertToShellPath
 
-method bin*(this: Manager, version: string): string {.base.} =
+
+method bin*(this: Manager, version: string, shell: bool): string {.base.} =
   let cmd = command("bin")
   if not this.existsFile(cmd):
-    return utils.bin(this.home(version)).trim
-  let (output, err) = this.exec(cmd, @[version])
-  if err == 0:
-    return output.trim
+    result = utils.bin(this.home(version, shell)).trim
   else:
-    this.error output.trim
-    return ""
+    let (output, err) = this.exec(cmd, @[version])
+    if err == 0:
+      result = output.trim
+    else:
+      this.error output.trim
+      result = ""
+  if shell: result = result.convertToShellPath
 
-method env*(this: Manager, version: string): string {.base.} =
+method env*(this: Manager, version: string, shell: bool): string {.base.} =
   let cmd = command("env")
   if not this.existsFile(cmd):
-    return utils.env(this.join(), this.bin(version))
-  let (output, err) = this.exec(cmd, @[version])
+    return utils.env(this.join().convertToShellPath, this.bin(version, shell))
+  let (output, err) = this.exec(cmd, @[version, $shell])
   if err == 0:
     return output
   else:

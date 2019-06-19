@@ -111,7 +111,7 @@ method clone*(this: Root): bool {.base.} =
   if not this.debug: options = {poUsePath}
 
   this.log "Cloning vendor-home..."
-  let (head, dirname) = this.homeDir.splitPath
+  let (_, dirname) = this.homeDir.splitPath
   let url = "https://github.com/shishidosoichiro/vendor-home.git"
   let process = this.git("..", "clone", @[url, dirname], options)
   defer: process.close
