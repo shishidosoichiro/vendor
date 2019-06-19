@@ -6,10 +6,10 @@ let doc = """
 Usage:
   vendor (-h|--help)
   vendor (-v|--version)
-  vendor [options] bin [<app-and-or-version>...]
+  vendor [options] bin [--shell] [<app-and-or-version>...]
   vendor [options] completion <shell>
-  vendor [options] env [<app-and-or-version>...]
-  vendor [options] home [<app-and-or-version>...]
+  vendor [options] env [--shell] [<app-and-or-version>...]
+  vendor [options] home [--shell] [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
   vendor [options] latest [--local] [<app>...]
   vendor [options] ls [-l|--long] [<app>...]
@@ -31,6 +31,7 @@ Options:
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
   -l, --long                with version
+  --shell                   Output with shell path
   -u, --update              update
   -v, --version             Output version
   -y, --yes                 Yes
@@ -120,6 +121,7 @@ proc main(): int =
   let yes = args["--yes"]
   let long = args["--long"]
   let local = args["--local"]
+  let shell = args["--shell"]
 
   let root = Root(homeDir: homeDir, appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
 
@@ -137,14 +139,14 @@ proc main(): int =
         result = QuitFailure
         continue
       if version == "latest": version = manager.latest(local = true)
-      let output = manager.bin(version)
+      let output = manager.bin(version, shell)
       if output == "":
         echoError "{app}: \"bin\" failed.".fmt
         result = QuitFailure
         continue
       echo output
 
-  # bin
+  # completion
   elif args["completion"]:
     stdout.write(completion)
 
@@ -158,7 +160,7 @@ proc main(): int =
         result = QuitFailure
         continue
       if version == "latest": version = manager.latest(local = true)
-      let output = manager.env(version)
+      let output = manager.env(version, shell)
       if output == "":
         echoError "{app}: \"env\" failed.".fmt
         result = QuitFailure
@@ -175,7 +177,7 @@ proc main(): int =
         result = QuitFailure
         continue
       if version == "latest": version = manager.latest(local = true)
-      let output = manager.home(version)
+      let output = manager.home(version, shell)
       if output == "":
         echoError "{app}: \"home\" failed.".fmt
         result = QuitFailure
