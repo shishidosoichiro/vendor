@@ -4,7 +4,7 @@ import options
 import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
 import osproc
-import re
+import regex
 import sequtils
 import streams
 import strformat
@@ -28,7 +28,7 @@ proc notEmpty(x: string): bool = x != ""
 proc notEmpty(s: seq[string]): seq[string] = s.filter(notEmpty)
 proc convertToShellPath(x: string): string =
   x.replace("\\", "/")
-  .replacef(re"^([a-zA-Z])\:", "/$1")
+  .replace(re"^([a-zA-Z])\:", "/$1")
 
 proc command(cmd: string): string =
   when defined(windows): joinPath("bin", cmd & ".cmd")

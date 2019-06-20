@@ -58,7 +58,8 @@ Commands:
 """
 const versionInfo = "Vendor " & staticExec("cd .. && (nimble version | grep -v Executing)") &
                   "\nRevision " & staticExec("git rev-parse HEAD") &
-                  "\nCompiled on " & staticExec("uname -v")
+                  "\nCompiled on " & staticExec("uname -v") &
+                  "\nNimVersion " & NimVersion
 const completion = staticRead("../completion.bash")
 
 import docopt
