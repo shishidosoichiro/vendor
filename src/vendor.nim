@@ -13,7 +13,7 @@ Usage:
   vendor [options] install [<app-and-or-version>...]
   vendor [options] latest [--local] [<app>...]
   vendor [options] ls [-l|--long] [<app>...]
-  vendor [options] search <app>
+  vendor [options] search [<app>]
   vendor [options] uninstall [<app-and-or-version>...]
   vendor [options] versions [<app>...]
   vendor [options] manager exec <app> [--] <cmd> [<args>...]
@@ -234,7 +234,10 @@ proc main(): int =
   # search
   elif args["search"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    root.search($args["<app>"])
+    if $args["<app>"] == "[]" or $args["<app>"] == "nil" or $args["<app>"] == "":
+      echo root.apps.join("\n")
+    else:
+      root.search($args["<app>"])
 
   # uninstall
   elif args["uninstall"]:
