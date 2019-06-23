@@ -32,7 +32,7 @@ __vendor_comp_func () {
           versions=$($vendor versions $prev | sed -e "s|^$prev@||");
           COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
         else
-          apps=$($vendor ls);
+          apps=$($vendor ls | sed -e 's/$/@/');
           COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
         fi
       ;;
@@ -84,7 +84,7 @@ __vendor_comp_func () {
           versions=$($vendor versions $prev | sed -e "s|^$prev@||");
           COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
         else
-          apps=$($vendor ls);
+          apps=$($vendor ls | sed -e 's/$/@/');
           COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
         fi
       ;;
