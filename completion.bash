@@ -24,8 +24,17 @@ __vendor_comp_func () {
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
       ;;
       "install")
-        apps=$($vendor ls)
-        COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+        if [ "${prev}" = "@" ]; then
+          local app=${COMP_WORDS[COMP_CWORD-2]}
+          versions=$($vendor versions $app | sed -e "s|^$app@||");
+          COMPREPLY=($(compgen -W "$versions" -- "${cur}" | sed -e 's|^|@|'));
+        elif [ "${cur}" = "@" ]; then
+          versions=$($vendor versions $prev | sed -e "s|^$prev@||");
+          COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
+        else
+          apps=$($vendor ls | sed -e 's/$/@/');
+          COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
+        fi
       ;;
       "bin"|"env"|"home"|"uninstall")
         if [ "${prev}" = "@" ]; then
@@ -67,8 +76,17 @@ __vendor_comp_func () {
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
       ;;
       "install")
-        apps=$($vendor ls)
-        COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
+        if [ "${prev}" = "@" ]; then
+          local app=${COMP_WORDS[COMP_CWORD-2]}
+          versions=$($vendor versions $app | sed -e "s|^$app@||");
+          COMPREPLY=($(compgen -W "$versions" -- "${cur}" | sed -e 's|^|@|'));
+        elif [ "${cur}" = "@" ]; then
+          versions=$($vendor versions $prev | sed -e "s|^$prev@||");
+          COMPREPLY=($(compgen -W "$versions" -- "" | sed -e 's|^|@|'));
+        else
+          apps=$($vendor ls | sed -e 's/$/@/');
+          COMPREPLY=($(compgen -W "$apps" -- "${cur}"));
+        fi
       ;;
       "bin"|"env"|"home"|"uninstall")
         if [ "${prev}" = "@" ]; then

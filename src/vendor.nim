@@ -12,8 +12,8 @@ Usage:
   vendor [options] home [--shell] [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
   vendor [options] latest [--local] [<app>...]
-  vendor [options] ls [-l|--long] [<app>...]
-  vendor [options] search <app>
+  vendor [options] ls [-l|--long] [-r|--remote] [<app>...]
+  vendor [options] search [<app>]
   vendor [options] uninstall [<app-and-or-version>...]
   vendor [options] versions [<app>...]
   vendor [options] manager exec <app> [--] <cmd> [<args>...]
@@ -32,6 +32,7 @@ Options:
   -h, --help                Output help
   -l, --long                with version
   --shell                   Output with shell path
+  -r, --remote              remote
   -u, --update              update
   -v, --version             Output version
   -y, --yes                 Yes
@@ -122,6 +123,7 @@ proc main(): int =
   let yes = args["--yes"]
   let long = args["--long"]
   let local = args["--local"]
+  let remote = args["--remote"]
   let shell = args["--shell"]
 
   let root = Root(homeDir: homeDir, appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
@@ -222,19 +224,33 @@ proc main(): int =
         if manager == nil:
           result = QuitFailure
           continue
-        let output = manager.installed.atmark(app).join("\n")
-        if output == "":
-          echoError "{app}: \"installed\" failed.".fmt
-          result = QuitFailure
-          continue
+        var output = ""
+        if remote:
+          output = manager.versions.atmark(app).join("\n")
+          if output == "":
+            echoError "{app}: \"versions\" failed.".fmt
+            result = QuitFailure
+            continue
+        else:
+          output = manager.installed.atmark(app).join("\n")
+          if output == "":
+            echoError "{app}: \"installed\" failed.".fmt
+            result = QuitFailure
+            continue
         echo output
     else:
-      if apps.len > 0: echo apps.join("\n")
+      if remote:
+        echo root.apps.join("\n")
+      else:
+        if apps.len > 0: echo apps.join("\n")
 
   # search
   elif args["search"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    root.search($args["<app>"])
+    if $args["<app>"] == "[]" or $args["<app>"] == "nil" or $args["<app>"] == "":
+      echo root.apps.join("\n")
+    else:
+      root.search($args["<app>"])
 
   # uninstall
   elif args["uninstall"]:
