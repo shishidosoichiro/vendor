@@ -101,7 +101,7 @@ method loadVendorRecord*(this: Root, app: string): VendorRecord {.base.} =
   if not records.hasKey(app): return nil
   return records[app]
 
-method search*(this: Root, word: string): void {.base.} =
+method search*(this: Root, word: string = ""): void {.base.} =
   let records = this.loadVendorRecords
   for app in records.keys:
     if app.contains(word): echo app
