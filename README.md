@@ -7,28 +7,28 @@ DIY Application Version Manager
 ### Linux
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-linux-amd64.tar.gz
-tar -xvzf vendor-0.2.2-linux-amd64.tar.gz
-mv ./vendor-0.2.2-linux-amd64/vendor /usr/local/bin
-echo ". <(vendor completion bash)" >> .bashrc
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-linux-amd64.tar.gz
+tar -xvzf vendor-0.2.7-linux-amd64.tar.gz
+mv ./vendor-0.2.7-linux-amd64/vendor /usr/local/bin
+echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Mac OS
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-darwin-amd64.tar.gz
-tar -xvzf vendor-0.2.2-darwin-amd64.tar.gz
-mv ./vendor-0.2.2-darwin-amd64/vendor /usr/local/bin
-echo ". <(vendor completion bash)" >> .bashrc
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-darwin-amd64.tar.gz" --output - > vendor-0.2.7-darwin-amd64.tar.gz
+tar -xvzf vendor-0.2.7-darwin-amd64.tar.gz
+mv ./vendor-0.2.7-darwin-amd64/vendor ~/bin/vendor
+echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Windows
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.2/vendor-0.2.2-windows-amd64.zip" --output - > vendor-0.2.2-windows-amd64.zip
-unzip vendor-0.2.2-windows-amd64.zip
-cp -pr ./vendor-0.2.2-windows-amd64/vendor ~/bin
-echo ". <(vendor completion bash)" >> .bashrc
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-windows-amd64.zip" --output - > vendor-0.2.7-windows-amd64.zip
+unzip vendor-0.2.7-windows-amd64.zip
+cp -pr ./vendor-0.2.7-windows-amd64/vendor ~/bin
+echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ## Install applications

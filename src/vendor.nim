@@ -240,7 +240,7 @@ proc main(): int =
         echo output
     else:
       if remote:
-        echo root.apps.join("\n")
+        root.search
       else:
         if apps.len > 0: echo apps.join("\n")
 
@@ -248,7 +248,7 @@ proc main(): int =
   elif args["search"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
     if $args["<app>"] == "[]" or $args["<app>"] == "nil" or $args["<app>"] == "":
-      echo root.apps.join("\n")
+      root.search
     else:
       root.search($args["<app>"])
 
