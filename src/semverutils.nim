@@ -5,8 +5,10 @@ proc parseVersionOrNot(x: string): Option[Version] =
   try:
     return some(v(x))
   except ParseError:
+    #echo getCurrentExceptionMsg()
     return none(Version)
   except FieldError:
+    #echo getCurrentExceptionMsg()
     return none(Version)
 
 proc cmpSemver*(x, y: string): int =

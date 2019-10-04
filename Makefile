@@ -17,7 +17,7 @@ all: clean
 	make -e size
 
 build:
-	$(time) nimble build
+	$(time) nimble build -d:nimOldCaseObjects
 	#wc -c ./vendor$(ext)
 	ls -lh ./vendor$(ext)
 
