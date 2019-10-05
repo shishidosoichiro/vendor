@@ -30,12 +30,12 @@ Options:
   -d, --debug               Debug mode
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
-  -l, --long                with version
+  -m, --mark                Add installed mark '*'
+  -l, --long                With version
   --shell                   Output with shell path
   -r, --remote              remote
   -u, --update              update
   -v, --version             Output version
-  -y, --yes                 Yes
 
 Commands:
   bin             Output bin directories of applications with ':' delimited.
@@ -67,10 +67,11 @@ import docopt
 import os
 import osproc
 import sequtils
+#import zip from sequtils
 import strformat
 import strutils
 import system
-#import tables
+import tables
 #import yaml/presenter
 #import yaml/serialization
 import ./manager
@@ -89,6 +90,18 @@ proc atmark(s: seq[string], x: string): seq[string] =
 
 proc echoError*(message: string): void =
   stderr.writeLine(message)
+
+proc markIfInstalled(x, y: seq[string]): seq[string] =
+  var table = initOrderedTable[string, string]()
+  for pairs in zip(x, x):
+    let (a, b) = pairs
+    table[a] = b
+
+  for item in y:
+    if table.contains(item):
+      table[item] = "{table[item]}*".fmt
+
+  return toSeq(values(table))
 
 proc load(root: Root, app: string, update: bool): Manager =
   let manager = root.newManager(app)
@@ -120,6 +133,7 @@ proc main(): int =
 
   let debug = args["--debug"]
   let update = args["--update"]
+  let mark = args["--mark"]
   let long = args["--long"]
   let local = args["--local"]
   let remote = args["--remote"]
@@ -225,7 +239,10 @@ proc main(): int =
           continue
         var output = ""
         if remote:
-          output = manager.versions.atmark(app).join("\n")
+          var versions = manager.versions
+          if mark:
+            versions = versions.markIfInstalled(manager.installed)
+          output = versions.atmark(app).join("\n")
           if output == "":
             echoError "{app}: \"versions\" failed.".fmt
             result = QuitFailure
