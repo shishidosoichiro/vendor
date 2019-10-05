@@ -1,6 +1,3 @@
-import algorithm
-import httpclient
-import options
 import os
 #from os import copyDirWithPermissions, copyFileWithPermissions, getFileInfo, pcFile, pcLinkToFile, pcDir, pcLinkToDir, walkDir
 import osproc
@@ -9,9 +6,7 @@ import streams
 import strformat
 import strutils
 import tables
-import uri
 import ./mkdirp
-import ./semverutils
 
 type Root* = ref object of RootObj
   homeDir*: string

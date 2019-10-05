@@ -15,7 +15,7 @@ provision-darwn:
 	brew install upx
 
 windows:
-	nim c --out:dist/vendor-$(tag)-windows-amd64/vendor.exe $(optimize) --cpu:amd64 --os:windows $(windows_gcc) -d:nimOldCaseObjects -f src/vendor.nim
+	nim c --out:dist/vendor-$(tag)-windows-amd64/vendor.exe $(optimize) --cpu:amd64 --os:windows $(windows_gcc) -f src/vendor.nim
 ifeq ($(strip),true)
 	x86_64-w64-mingw32-strip dist/vendor-$(tag)-windows-amd64/vendor.exe
 endif
@@ -25,7 +25,7 @@ endif
 	cd dist && zip -r vendor-$(tag)-windows-amd64.zip vendor-$(tag)-windows-amd64
 
 linux:
-	nim c --out:dist/vendor-$(tag)-linux-amd64/vendor $(optimize) --cpu:arm64 --os:linux $(linux_gcc) -d:nimOldCaseObjects -f src/vendor.nim
+	nim c --out:dist/vendor-$(tag)-linux-amd64/vendor $(optimize) --cpu:arm64 --os:linux $(linux_gcc) -f src/vendor.nim
 ifeq ($(strip),true)
 	x86_64-unknown-linux-gnu-strip dist/vendor-$(tag)-linux-amd64/vendor
 endif
@@ -35,7 +35,7 @@ endif
 	cd dist && tar -zcf vendor-$(tag)-linux-amd64.tar.gz vendor-$(tag)-linux-amd64
 
 darwin:
-	nim c --out:dist/vendor-$(tag)-darwin-amd64/vendor $(optimize) --cpu:arm64 -d:nimOldCaseObjects -f src/vendor.nim
+	nim c --out:dist/vendor-$(tag)-darwin-amd64/vendor $(optimize) --cpu:arm64 -f src/vendor.nim
 ifeq ($(strip),true)
 	strip dist/vendor-$(tag)-darwin-amd64/vendor
 endif

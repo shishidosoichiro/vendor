@@ -120,7 +120,6 @@ proc main(): int =
 
   let debug = args["--debug"]
   let update = args["--update"]
-  let yes = args["--yes"]
   let long = args["--long"]
   let local = args["--local"]
   let remote = args["--remote"]
