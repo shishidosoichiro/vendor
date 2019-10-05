@@ -14,7 +14,7 @@ __vendor_comp_func () {
         COMPREPLY=($(compgen -W "exec pull init" -- "${cur}"))
       ;;
       "root")
-        COMPREPLY=($(compgen -W "crobber pull" -- "${cur}"))
+        COMPREPLY=($(compgen -W "crobber exec pull" -- "${cur}"))
       ;;
       "util")
         COMPREPLY=($(compgen -W "bin env" -- "${cur}"))
@@ -71,7 +71,7 @@ __vendor_comp_func () {
       "completion")
         COMPREPLY=($(compgen -W "bash" -- "${cur}"))
       ;;
-      "latest"|"ls"|"search"|"versions")
+      |"exec"|"latest"|"ls"|"search"|"versions")
         apps=$($vendor ls)
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
       ;;
