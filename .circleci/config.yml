@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: nimlang/nim:latest
+    working_directory: /usr/src/vendor
+    steps:
+      - checkout
+      - run:
+          name: provision
+          command: |
+            apt install -y make;
+            make provision-linux
+      - run:
+          name: semver
+          command: |
+            cd ..
+            git clone https://github.com/shishidosoichiro/semver.nim.git
+            cd semver.nim
+            nimble install -y
+            cd ../vendor
+      - run:
+          name: nimble
+          command: nimble install -y
+      - run:
+          name: build
+          command: make linux
+      - store_artifacts:
+          path: /usr/src/vendor/dist/vendor-0.3.0-linux-amd64.tar.gz

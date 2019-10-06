@@ -5,7 +5,7 @@ export tag=$(shell nimble version | grep -v Executing)
 
 os=$(shell if uname -s | grep -qi MINGW64; then echo windows; elif uname -s | grep -qi MSYS; then echo windows; elif uname -s | grep -qi Darwin; then echo darwin; else echo linux; fi)
 ext=$(shell if [ $(os) = windows ]; then echo .exe; fi)
-time=$(shell if [ $(os) != windows ]; then echo time; fi)
+time=$(shell if [ $(os) = darwin ]; then echo time; fi)
 
 release_script_url=https://gist.github.com/stefanbuck/ce788fee19ab6eb0b4447a85fc99f447/raw/dbadd7d310ce8446de89c4ffdf1db0b400d0f6c3/upload-github-release-asset.sh
 release_script=./dist/upload-github-release-asset.sh
@@ -56,5 +56,14 @@ linux:
 
 darwin:
 	$(time) make darwin -e -f build/Makefile.$(os)
+
+provision-windows:
+	$(time) make provision-windows -e -f build/Makefile.$(os)
+
+provision-linux:
+	$(time) make provision-linux -e -f build/Makefile.$(os)
+
+provision-darwin:
+	$(time) make provision-darwin -e -f build/Makefile.$(os)
 
 .PHONY: build

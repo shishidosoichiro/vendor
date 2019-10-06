@@ -1,0 +1,52 @@
+strip=true
+upx=true
+windows_gcc=--gcc.exe:x86_64-w64-mingw32-gcc --gcc.linkerexe:x86_64-w64-mingw32-gcc
+linux_gcc=--gcc.exe:x86_64-unknown-linux-gnu-gcc --gcc.linkerexe:x86_64-unknown-linux-gnu-gcc
+darwin_gcc=--gcc.exe:x86_64-unknown-linux-gnu-gcc --gcc.linkerexe:x86_64-unknown-linux-gnu-gcc
+optimize=-d:release -d:ssl --opt:size
+
+provision-windows:
+	apt update
+	apt upgrade
+	#apt install -y upx mingw-w64-gcc mingw-w64-winpthreads mingw-w64-winpthreads-doc mingw-w64-crt mingw-w64-gcc-base mingw-w64-headers mingw-w64-headers-doc mingw-w64-binutils mingw-w64-binutils-doc mingw-w64-headers-bootstrap
+	apt install -y upx mingw-w64-tools
+
+provision-linux:
+	apt update -y
+	apt upgrade -y
+	apt install -y upx
+
+provision-darwn:
+	apt update
+	apt upgrade
+	apt install -y upx odcctools
+
+windows:
+	nim c --out:dist/vendor-$(tag)-windows-amd64/vendor.exe $(optimize) --cpu:amd64 --os:windows $(windows_gcc) -f src/vendor.nim
+ifeq ($(strip),true)
+	x86_64-w64-mingw32-strip dist/vendor-$(tag)-windows-amd64/vendor.exe
+endif
+ifeq ($(upx),true)
+	upx dist/vendor-$(tag)-windows-amd64/vendor.exe
+endif
+	cd dist && zip -r vendor-$(tag)-windows-amd64.zip vendor-$(tag)-windows-amd64
+
+linux:
+	nim c --out:dist/vendor-$(tag)-linux-amd64/vendor $(optimize) --cpu:arm64 -f src/vendor.nim
+ifeq ($(strip),true)
+	strip dist/vendor-$(tag)-linux-amd64/vendor
+endif
+ifeq ($(upx),true)
+	upx dist/vendor-$(tag)-linux-amd64/vendor
+endif
+	cd dist && tar -zcf vendor-$(tag)-linux-amd64.tar.gz vendor-$(tag)-linux-amd64
+
+darwin:
+	nim c --out:dist/vendor-$(tag)-darwin-amd64/vendor $(optimize) --cpu:arm64 -f src/vendor.nim
+ifeq ($(strip),true)
+	strip dist/vendor-$(tag)-darwin-amd64/vendor
+endif
+ifeq ($(upx),true)
+	upx dist/vendor-$(tag)-darwin-amd64/vendor
+endif
+	cd dist && tar -zcf vendor-$(tag)-darwin-amd64.tar.gz vendor-$(tag)-darwin-amd64
