@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.7"
+version       = "0.3.0"
 author        = "Soichiro Shishido"
 description   = "app and version vendor"
 license       = "MIT"
@@ -10,10 +10,10 @@ bin           = @["vendor"]
 
 # Dependencies
 
-requires "nim >= 0.19.2"
+requires "nim >= 1.0.0"
 requires "docopt >= 0.6.8"
 requires "options >= 0.1.0"
-requires "regex >= 0.7.4"
+requires "regex >= 0.12.0"
 requires "semver >= 1.1.0"
 
 task version, "output version":

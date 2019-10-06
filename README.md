@@ -7,27 +7,27 @@ DIY Application Version Manager
 ### Linux
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-linux-amd64.tar.gz
-tar -xvzf vendor-0.2.7-linux-amd64.tar.gz
-mv ./vendor-0.2.7-linux-amd64/vendor /usr/local/bin
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-linux-amd64.tar.gz
+tar -xvzf vendor-0.3.0-linux-amd64.tar.gz
+mv ./vendor-0.3.0-linux-amd64/vendor /usr/local/bin
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Mac OS
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-darwin-amd64.tar.gz" --output - > vendor-0.2.7-darwin-amd64.tar.gz
-tar -xvzf vendor-0.2.7-darwin-amd64.tar.gz
-mv ./vendor-0.2.7-darwin-amd64/vendor ~/bin/vendor
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-darwin-amd64.tar.gz" --output - > vendor-0.3.0-darwin-amd64.tar.gz
+tar -xvzf vendor-0.3.0-darwin-amd64.tar.gz
+mv ./vendor-0.3.0-darwin-amd64/vendor ~/bin/vendor
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Windows
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.2.7/vendor-0.2.7-windows-amd64.zip" --output - > vendor-0.2.7-windows-amd64.zip
-unzip vendor-0.2.7-windows-amd64.zip
-cp -pr ./vendor-0.2.7-windows-amd64/vendor ~/bin
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-windows-amd64.zip" --output - > vendor-0.3.0-windows-amd64.zip
+unzip vendor-0.3.0-windows-amd64.zip
+cp -pr ./vendor-0.3.0-windows-amd64/vendor ~/bin
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
@@ -55,14 +55,14 @@ eval $(vendor env)
 Usage:
   vendor (-h|--help)
   vendor (-v|--version)
-  vendor [options] bin [<app-and-or-version>...]
+  vendor [options] bin [--shell] [<app-and-or-version>...]
   vendor [options] completion <shell>
-  vendor [options] env [<app-and-or-version>...]
-  vendor [options] home [<app-and-or-version>...]
+  vendor [options] env [--shell] [<app-and-or-version>...]
+  vendor [options] home [--shell] [<app-and-or-version>...]
   vendor [options] install [<app-and-or-version>...]
   vendor [options] latest [--local] [<app>...]
-  vendor [options] ls [-l|--long] [<app>...]
-  vendor [options] search <app>
+  vendor [options] ls [-l|--long] [-r|--remote] [<app>...]
+  vendor [options] search [<app>]
   vendor [options] uninstall [<app-and-or-version>...]
   vendor [options] versions [<app>...]
   vendor [options] manager exec <app> [--] <cmd> [<args>...]
@@ -79,10 +79,12 @@ Options:
   -d, --debug               Debug mode
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
-  -l, --long                with version
+  -m, --mark                Add installed mark '*'
+  -l, --long                With version
+  --shell                   Output with shell path
+  -r, --remote              remote
   -u, --update              update
   -v, --version             Output version
-  -y, --yes                 Yes
 
 Commands:
   bin             Output bin directories of applications with ':' delimited.
@@ -116,7 +118,6 @@ Commands:
 - `vendor pull <app>@<url>`
 - verify downloaded executable file with its hash.
 - keep latest version
-- mark installed versions when list versions.
 
 
 - through stdout/stderr/stdin using async or threads

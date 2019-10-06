@@ -30,12 +30,12 @@ Options:
   -d, --debug               Debug mode
   -f, --vendors-list=FILE   Specify vendors list file.
   -h, --help                Output help
-  -l, --long                with version
+  -m, --mark                Add installed mark '*'
+  -l, --long                With version
   --shell                   Output with shell path
   -r, --remote              remote
   -u, --update              update
   -v, --version             Output version
-  -y, --yes                 Yes
 
 Commands:
   bin             Output bin directories of applications with ':' delimited.
@@ -67,10 +67,11 @@ import docopt
 import os
 import osproc
 import sequtils
+#import zip from sequtils
 import strformat
 import strutils
 import system
-#import tables
+import tables
 #import yaml/presenter
 #import yaml/serialization
 import ./manager
@@ -89,6 +90,18 @@ proc atmark(s: seq[string], x: string): seq[string] =
 
 proc echoError*(message: string): void =
   stderr.writeLine(message)
+
+proc markIfInstalled(x, y: seq[string]): seq[string] =
+  var table = initOrderedTable[string, string]()
+  for pairs in zip(x, x):
+    let (a, b) = pairs
+    table[a] = b
+
+  for item in y:
+    if table.contains(item):
+      table[item] = "{table[item]}*".fmt
+
+  return toSeq(values(table))
 
 proc load(root: Root, app: string, update: bool): Manager =
   let manager = root.newManager(app)
@@ -120,7 +133,7 @@ proc main(): int =
 
   let debug = args["--debug"]
   let update = args["--update"]
-  let yes = args["--yes"]
+  let mark = args["--mark"]
   let long = args["--long"]
   let local = args["--local"]
   let remote = args["--remote"]
@@ -128,14 +141,14 @@ proc main(): int =
 
   let root = Root(homeDir: homeDir, appsDir: appsDir, vendorsFile: vendorsFile, debug: debug)
 
-  proc apps(defaults: seq[string]): seq[string] =
+  proc applications(defaults: seq[string]): seq[string] =
     if defaults.len == 0: root.apps
     else: defaults
 
   # bin
   if args["bin"] and not args["util"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for appver in apps(@(args["<app-and-or-version>"])):
+    for appver in applications(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
       if manager == nil:
@@ -156,7 +169,7 @@ proc main(): int =
   # env
   elif args["env"] and not args["util"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for appver in apps(@(args["<app-and-or-version>"])):
+    for appver in applications(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
       if manager == nil:
@@ -173,7 +186,7 @@ proc main(): int =
   # home
   elif args["home"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for appver in apps(@(args["<app-and-or-version>"])):
+    for appver in applications(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
       if manager == nil:
@@ -190,7 +203,7 @@ proc main(): int =
   # install
   elif args["install"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for appver in apps(@(args["<app-and-or-version>"])):
+    for appver in applications(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.load(app, update)
       if manager == nil:
@@ -202,7 +215,7 @@ proc main(): int =
   # latest
   elif args["latest"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for app in apps(@(args["<app>"])):
+    for app in applications(@(args["<app>"])):
       let manager = root.load(app, update)
       if manager == nil:
         result = QuitFailure
@@ -217,16 +230,19 @@ proc main(): int =
   # ls
   elif args["ls"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    let apps = apps(@(args["<app>"]))
+    let apps = applications(@(args["<app>"]))
     if long:
-      for app in apps(@(args["<app>"])):
+      for app in apps:
         let manager = root.load(app, update)
         if manager == nil:
           result = QuitFailure
           continue
         var output = ""
         if remote:
-          output = manager.versions.atmark(app).join("\n")
+          var versions = manager.versions
+          if mark:
+            versions = versions.markIfInstalled(manager.installed)
+          output = versions.atmark(app).join("\n")
           if output == "":
             echoError "{app}: \"versions\" failed.".fmt
             result = QuitFailure
@@ -255,7 +271,7 @@ proc main(): int =
   # uninstall
   elif args["uninstall"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for appver in apps(@(args["<app-and-or-version>"])):
+    for appver in applications(@(args["<app-and-or-version>"])):
       var (app, version) = parse(appver)
       let manager = root.newManager(app)
       if (not manager.existsDir):
@@ -274,7 +290,7 @@ proc main(): int =
   # versions
   elif args["versions"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for app in apps(@(args["<app>"])):
+    for app in applications(@(args["<app>"])):
       let manager = root.load(app, update)
       if manager == nil:
         result = QuitFailure
@@ -309,7 +325,7 @@ proc main(): int =
   # manager pull
   elif args["manager"] and args["pull"]:
     if (not root.existsDir or update) and not root.pull: return QuitFailure
-    for app in apps(@(args["<app>"])):
+    for app in applications(@(args["<app>"])):
       let manager = root.newManager(app)
       if manager.pull: continue
 
