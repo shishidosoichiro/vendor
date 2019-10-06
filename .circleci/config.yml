@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  linux:
     docker:
       - image: nimlang/nim:latest
     working_directory: /usr/src/vendor
@@ -27,3 +27,36 @@ jobs:
           command: make linux
       - store_artifacts:
           path: /usr/src/vendor/dist/vendor-0.3.0-linux-amd64.tar.gz
+  windows:
+    docker:
+      - image: nimlang/nim:latest
+    working_directory: /usr/src/vendor
+    steps:
+      - checkout
+      - run:
+          name: provision
+          command: |
+            apt install -y make;
+            make provision-windows
+      - run:
+          name: semver
+          command: |
+            cd ..
+            git clone https://github.com/shishidosoichiro/semver.nim.git
+            cd semver.nim
+            nimble install -y
+            cd ../vendor
+      - run:
+          name: nimble
+          command: nimble install -y
+      - run:
+          name: build
+          command: make windows
+      - store_artifacts:
+          path: /usr/src/vendor/dist/vendor-0.3.0-windows-amd64.zip
+workflows:
+  version: 2
+  build:
+    jobs:
+      - linux
+      - windows

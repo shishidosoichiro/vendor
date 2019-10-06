@@ -6,10 +6,10 @@ darwin_gcc=--gcc.exe:x86_64-unknown-linux-gnu-gcc --gcc.linkerexe:x86_64-unknown
 optimize=-d:release -d:ssl --opt:size
 
 provision-windows:
-	apt update
-	apt upgrade
+	apt update -y
+	apt upgrade -y
 	#apt install -y upx mingw-w64-gcc mingw-w64-winpthreads mingw-w64-winpthreads-doc mingw-w64-crt mingw-w64-gcc-base mingw-w64-headers mingw-w64-headers-doc mingw-w64-binutils mingw-w64-binutils-doc mingw-w64-headers-bootstrap
-	apt install -y upx mingw-w64-tools
+	apt install -y mingw-w64 upx zip
 
 provision-linux:
 	apt update -y
@@ -17,8 +17,8 @@ provision-linux:
 	apt install -y upx
 
 provision-darwn:
-	apt update
-	apt upgrade
+	apt update -y
+	apt upgrade -y
 	apt install -y upx odcctools
 
 windows:
