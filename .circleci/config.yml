@@ -10,7 +10,7 @@ jobs:
           name: provision
           command: |
             apt install -y make;
-            make provision-linux
+            make provision os=linux
       - run:
           name: semver
           command: |
@@ -24,7 +24,7 @@ jobs:
           command: nimble install -y
       - run:
           name: build
-          command: make linux
+          command: make build os=linux
       - store_artifacts:
           path: /usr/src/vendor/dist/vendor-0.3.0-linux-amd64.tar.gz
   windows:
@@ -37,7 +37,7 @@ jobs:
           name: provision
           command: |
             apt install -y make;
-            make provision-windows
+            make provision os=windows
       - run:
           name: semver
           command: |
@@ -51,7 +51,7 @@ jobs:
           command: nimble install -y
       - run:
           name: build
-          command: make windows
+          command: make build os=windows
       - store_artifacts:
           path: /usr/src/vendor/dist/vendor-0.3.0-windows-amd64.zip
 workflows:
