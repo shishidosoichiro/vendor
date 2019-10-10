@@ -1,0 +1,12 @@
+provision:
+	apt update -y
+	apt upgrade -y
+
+provision-windows: provision
+	apt install -y mingw-w64 upx zip
+
+provision-linux: provision
+	apt install -y upx
+
+provision-macosx: provision
+	apt install -y upx odcctools
