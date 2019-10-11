@@ -2,8 +2,7 @@ provision-windows:
 	brew install mingw-w64 upx
 
 provision-linux:
-	brew tap SergioBenitez/osxct
-	brew install x86_64-unknown-linux-gnu upx
+	brew install brew install FiloSottile/musl-cross/musl-cross upx
 
 provision-macosx:
 	brew install upx

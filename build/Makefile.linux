@@ -8,5 +8,6 @@ provision-windows: provision
 provision-linux: provision
 	apt install -y upx
 
+# [Cross compile to OS X](https://forum.nim-lang.org/t/2652)
 provision-macosx: provision
 	apt install -y upx odcctools

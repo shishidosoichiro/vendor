@@ -35,7 +35,9 @@ method error*(this: Root, message: string): void {.base.} =
 
 method join*(this: Root, app: string, paths: varargs[string]): string {.base.} =
   var head = this.appsDir.expandTilde.absolutePath
-  if app == "..":
+  if app == "../..":
+    head = head.parentDir.parentDir
+  elif app == "..":
     head = head.parentDir
   elif app == ".":
     head = head
@@ -108,7 +110,7 @@ method clone*(this: Root): bool {.base.} =
   this.log "Cloning vendor-home..."
   let (_, dirname) = this.homeDir.splitPath
   let url = "https://github.com/shishidosoichiro/vendor-home.git"
-  let process = this.git("..", "clone", @[url, dirname], options)
+  let process = this.git("../..", "clone", @[url, dirname], options)
   defer: process.close
   let ret = process.waitForExit
   if ret != 0: return false
@@ -120,7 +122,7 @@ method pull*(this: Root): bool {.base.} =
   var options = {poUsePath, poParentStreams}
   if not this.debug: options = {poUsePath}
 
-  if not this.existsDir:
+  if not this.existsDir(".."):
     return this.clone()
 
   this.log "Updating vendor-home..."
