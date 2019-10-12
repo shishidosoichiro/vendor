@@ -54,8 +54,13 @@ method existsDir*(this: Root, app: string = ".", paths: varargs[string]): bool {
 method existsFile*(this: Root, app: string = ".", paths: varargs[string]): bool {.base.} =
   this.join(app, paths).existsFile
 
+method exists*(this: Root): bool {.base.} =
+  this.homeDir.existsDir
+
 method start*(this: Root, app, cmd: string, args: openArray[string] = [], options = {poUsePath, poParentStreams}): Process {.base.} =
   let workingDir = this.join(app)
+  if not workingDir.existsDir:
+    raise newException(OSError, "Directory does not exists. directory={workingDir}".fmt)
   #debugEcho "workingDir: {workingDir}, cmd: {cmd}, args: {args}".fmt
   when defined(windows):
     let curdir = getCurrentDir()
@@ -121,9 +126,6 @@ method clone*(this: Root): bool {.base.} =
 method pull*(this: Root): bool {.base.} =
   var options = {poUsePath, poParentStreams}
   if not this.debug: options = {poUsePath}
-
-  if not this.existsDir(".."):
-    return this.clone()
 
   this.log "Updating vendor-home..."
   let process = this.git(".", "pull", options = options)
