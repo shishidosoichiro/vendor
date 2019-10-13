@@ -34,7 +34,7 @@ macosx:
 build:
 	#nim c --out:vendor$(ext) --cpu:$(cpu) --os:$(os) -d:ssl $(optimize) -d:platform_$(platform) -f src/vendor.nim
 	nimble build --cpu:$(cpu) --os:$(os) -d:ssl $(optimize) -d:platform_$(platform)
-ifeq ($(os)$(strip),macosxtrue)
+ifeq ($(platform)-$(os)-$(strip),macosx-macosx-true)
 	strip ./vendor$(ext)
 endif
 ifeq ($(upx),true)

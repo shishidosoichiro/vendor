@@ -1,4 +1,6 @@
-# Vendor [![CircleCI](https://circleci.com/gh/shishidosoichiro/vendor/tree/master.svg?style=svg)](https://circleci.com/gh/shishidosoichiro/vendor/tree/master)
+# Vendor
+
+[![CircleCI](https://circleci.com/gh/shishidosoichiro/vendor/tree/master.svg?style=svg)](https://circleci.com/gh/shishidosoichiro/vendor/tree/master)
 
 Vendor is DIY Application Version Manager.
 Light size, Multiple platform, Filesystem clean, and DIY.
