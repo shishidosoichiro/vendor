@@ -71,7 +71,7 @@ __vendor_comp_func () {
       "completion")
         COMPREPLY=($(compgen -W "bash" -- "${cur}"))
       ;;
-      |"exec"|"latest"|"ls"|"search"|"versions")
+      "exec"|"latest"|"ls"|"search"|"versions")
         apps=$($vendor ls)
         COMPREPLY=($(compgen -W "$apps" -- "${cur}"))
       ;;

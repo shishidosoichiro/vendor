@@ -5,53 +5,56 @@ export tag=$(shell nimble version | grep -v Executing)
 
 strip=true
 upx=true
-optimize=-d:release -d:ssl --opt:size
+optimize=
+#optimize=-d:release --opt:size
 cpu=amd64
 #cpu=arm64
 platform=$(shell if uname -s | grep -qi MINGW64; then echo windows; elif uname -s | grep -qi MSYS; then echo windows; elif uname -s | grep -qi Darwin; then echo macosx; else echo linux; fi)
 os=$(platform)
 
 ext=$(shell if [ $(os) = windows ]; then echo .exe; fi)
-archive=$(shell if [ $(os) = windows ]; then echo zip; else echo tar.gz; fi)
 release_script_url=https://gist.github.com/stefanbuck/ce788fee19ab6eb0b4447a85fc99f447/raw/dbadd7d310ce8446de89c4ffdf1db0b400d0f6c3/upload-github-release-asset.sh
 release_script=./dist/upload-github-release-asset.sh
 time=$(shell if [ $(platform) = macosx ]; then echo time; fi)
 
+archive_name=vendor-$(tag)-$(os)-$(cpu)
+archive_ext=$(shell if [ $(os) = windows ]; then echo zip; else echo tar.gz; fi)
+
 all: windows linux macosx size
 
 windows:
-	$(time) make build os=windows
+	$(time) make build package os=windows optimize="-d:release --opt:size"
 
 linux:
-	$(time) make build os=linux
+	$(time) make build package os=linux optimize="-d:release --opt:size"
 
 macosx:
-	$(time) make build os=macosx
+	$(time) make build package os=macosx optimize="-d:release --opt:size"
 
 build:
-	nim c --out:dist/vendor-$(tag)-$(os)-$(cpu)/vendor$(ext) $(optimize) --cpu:$(cpu) --os:$(os) -d:platform_$(platform) -f src/vendor.nim
-ifeq ($(os)$(strip),macosxtrue)
-	strip dist/vendor-$(tag)-$(os)-$(cpu)/vendor$(ext)
+	#nim c --out:vendor$(ext) --cpu:$(cpu) --os:$(os) -d:ssl $(optimize) -d:platform_$(platform) -f src/vendor.nim
+	nimble build --cpu:$(cpu) --os:$(os) -d:ssl $(optimize) -d:platform_$(platform)
+ifeq ($(platform)-$(os)-$(strip),macosx-macosx-true)
+	strip ./vendor$(ext)
 endif
 ifeq ($(upx),true)
-	upx --best dist/vendor-$(tag)-$(os)-$(cpu)/vendor$(ext)
-endif
-ifeq ($(archive),zip)
-	cd dist && zip -r vendor-$(tag)-$(os)-$(cpu).zip vendor-$(tag)-$(os)-$(cpu)
-endif
-ifeq ($(archive),tar.gz)
-	cd dist && tar -zcf vendor-$(tag)-$(os)-$(cpu).tar.gz vendor-$(tag)-$(os)-$(cpu)
+	upx --best ./vendor$(ext)
 endif
 
-nimble:
-	$(time) nimble build
-	#wc -c ./vendor$(ext)
-	ls -lh ./vendor$(ext)
+package:
+	mkdir -p dist/$(archive_name)
+	cp -rp ./vendor$(ext) dist/$(archive_name)/vendor$(ext)
+ifeq ($(archive_ext),zip)
+	cd dist && zip -r $(archive_name).zip $(archive_name)
+endif
+ifeq ($(archive_ext),tar.gz)
+	cd dist && tar -zcf $(archive_name).tar.gz $(archive_name)
+endif
 
 install:
 	#$(time) nimble install -y --debug
 	mkdir -p ~/bin
-	cp -pr dist/vendor-$(tag)-macosx-amd64/vendor ~/bin
+	cp -pr ./vendor ~/bin
 	ls -lLh $(shell which vendor)
 
 release:
@@ -73,6 +76,8 @@ size:
 	ls -lLh dist/*/*
 
 clean:
+	rm -rf ./vendor
+	rm -rf ./vendor.exe
 	rm -rf ./dist/*
 
 provision:

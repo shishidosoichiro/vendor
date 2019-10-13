@@ -1,35 +1,10 @@
 # Vendor
 
-DIY Application Version Manager
+[![CircleCI](https://circleci.com/gh/shishidosoichiro/vendor/tree/master.svg?style=svg)](https://circleci.com/gh/shishidosoichiro/vendor/tree/master)
 
-## Install vendor
+Vendor is DIY Application Version Manager.
+Light size, Multiple platform, Filesystem clean, and DIY.
 
-### Linux
-
-```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-linux-amd64.tar.gz
-tar -xvzf vendor-0.3.0-linux-amd64.tar.gz
-mv ./vendor-0.3.0-linux-amd64/vendor /usr/local/bin
-echo ". <(vendor completion bash)" >> ~/.bashrc
-```
-
-### Mac OS
-
-```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-darwin-amd64.tar.gz" --output - > vendor-0.3.0-darwin-amd64.tar.gz
-tar -xvzf vendor-0.3.0-darwin-amd64.tar.gz
-mv ./vendor-0.3.0-darwin-amd64/vendor ~/bin/vendor
-echo ". <(vendor completion bash)" >> ~/.bashrc
-```
-
-### Windows
-
-```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.0/vendor-0.3.0-windows-amd64.zip" --output - > vendor-0.3.0-windows-amd64.zip
-unzip vendor-0.3.0-windows-amd64.zip
-cp -pr ./vendor-0.3.0-windows-amd64/vendor ~/bin
-echo ". <(vendor completion bash)" >> ~/.bashrc
-```
 
 ## Install applications
 
@@ -44,6 +19,35 @@ eval $(vendor env)
 . <(vendor env)
 ```
 
+
+## Install vendor
+
+### Linux
+
+```
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.3.2/vendor-0.3.2-linux-amd64.tar.gz
+tar -xvzf vendor-0.3.2-linux-amd64.tar.gz
+mv ./vendor-0.3.2-linux-amd64/vendor /usr/local/bin
+echo ". <(vendor completion bash)" >> ~/.bashrc
+```
+
+### Mac OS
+
+```
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.2/vendor-0.3.2-darwin-amd64.tar.gz" --output - > vendor-0.3.2-darwin-amd64.tar.gz
+tar -xvzf vendor-0.3.2-darwin-amd64.tar.gz
+mv ./vendor-0.3.2-darwin-amd64/vendor ~/bin/vendor
+echo ". <(vendor completion bash)" >> ~/.bashrc
+```
+
+### Windows
+
+```
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.2/vendor-0.3.2-windows-amd64.zip" --output - > vendor-0.3.2-windows-amd64.zip
+unzip vendor-0.3.2-windows-amd64.zip
+cp -pr ./vendor-0.3.2-windows-amd64/vendor ~/bin
+echo ". <(vendor completion bash)" >> ~/.bashrc
+```
 
 ## Usage
 
@@ -106,19 +110,3 @@ Commands:
 
 ::
 ```
-
-
-## todo
-
-- vendor-init
-  - ./bin/download stdout with wget curl
-  - ./bin/download remove querystring from filename
-- pull vendor.txt from another url.
-- add manager to vendor.txt
-- `vendor pull <app>@<url>`
-- verify downloaded executable file with its hash.
-- keep latest version
-
-
-- through stdout/stderr/stdin using async or threads
-- color styled stdout/stderr
