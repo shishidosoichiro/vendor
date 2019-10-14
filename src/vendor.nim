@@ -23,7 +23,10 @@ Usage:
   vendor [options] root exec [--] <cmd> [<args>...]
   vendor [options] root pull
   vendor [options] util bin <home>
+  vendor [options] util download <url>
   vendor [options] util env <manager-dir> <bin>
+  vendor [options] util extract <filename> <target>
+  vendor [options] util os
 
 Options:
   -a, --home-dir=DIR        Specify vendor home dir
@@ -53,7 +56,10 @@ Commands:
   root exec       Excecute <cmd> on root dirrectory.
   root pull       Update version.txt.
   util bin        Output default bin path.
+  util download   Download a file from URL.
   util env        Output default env script.
+  util extract    Extract a file.
+  util os         Output OS string.
 
 ::
 """
@@ -360,11 +366,29 @@ proc main(): int =
     let home = $args["<home>"]
     echo utils.bin(home)
 
+  # util download
+  elif args["util"] and args["download"]:
+    let url = $args["<url>"]
+    echo utils.download(url)
+
   # util env
   elif args["util"] and args["env"]:
     let managerDir = $args["<manager-dir>"]
     let bin = $args["<bin>"]
     echo utils.env(managerDir, bin)
+
+  # util extract
+  elif args["util"] and args["extract"]:
+    let filename = $args["<filename>"]
+    let target = $args["<target>"]
+    echo utils.extract(filename, target)
+
+  # util extract
+  elif args["util"] and args["os"]:
+    if hostOS == "macosx":
+      echo "darwin"
+    else:
+      echo hostOS
 
   else:
     echo args
