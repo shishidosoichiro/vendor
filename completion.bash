@@ -17,7 +17,7 @@ __vendor_comp_func () {
         COMPREPLY=($(compgen -W "crobber exec pull" -- "${cur}"))
       ;;
       "util")
-        COMPREPLY=($(compgen -W "bin env" -- "${cur}"))
+        COMPREPLY=($(compgen -W "bin download env extract os" -- "${cur}"))
       ;;
       "latest"|"ls"|"search"|"versions")
         apps=$($vendor ls)
