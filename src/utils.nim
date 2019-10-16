@@ -13,8 +13,8 @@ proc env*(managerDir, bin: string): string =
   fmt"""
 
 # {extractFilename(managerDir)}
-if echo "$PATH" | grep -q "{managerDir}"; then
-  PATH=$(echo "$PATH" | sed -e "s|{managerDir}[^:]*:||g");
+if echo "$PATH" | grep -q "{managerDir}/"; then
+  PATH=$(echo "$PATH" | sed -e "s|{managerDir}/[^:]*:||g");
 fi;
 export PATH="{bin}:$PATH";
 
