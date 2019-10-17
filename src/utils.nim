@@ -10,11 +10,15 @@ proc bin*(home: string): string =
   home / "bin"
 
 proc env*(managerDir, bin: string): string =
+  var ignore = ""
+  when defined(windows):
+    ignore = "i"
+
   fmt"""
 
 # {extractFilename(managerDir)}
-if echo "$PATH" | grep -q "{managerDir}/"; then
-  PATH=$(echo "$PATH" | sed -e "s|{managerDir}/[^:]*:||g");
+if echo "$PATH" | grep -{ignore}q "{managerDir}/"; then
+  PATH=$(echo "$PATH" | sed -e "s|{managerDir}/[^:]*:||{ignore}g");
 fi;
 export PATH="{bin}:$PATH";
 
