@@ -25,27 +25,27 @@ eval $(vendor env)
 ### Linux
 
 ```
-wget https://github.com/shishidosoichiro/vendor/releases/download/0.3.4/vendor-0.3.4-linux-amd64.tar.gz
-tar -xvzf vendor-0.3.4-linux-amd64.tar.gz
-mv ./vendor-0.3.4-linux-amd64/vendor /usr/local/bin
+wget https://github.com/shishidosoichiro/vendor/releases/download/0.3.5/vendor-0.3.5-linux-amd64.tar.gz
+tar -xvzf vendor-0.3.5-linux-amd64.tar.gz
+mv ./vendor-0.3.5-linux-amd64/vendor /usr/local/bin
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Mac OS
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.4/vendor-0.3.4-darwin-amd64.tar.gz" --output - > vendor-0.3.4-darwin-amd64.tar.gz
-tar -xvzf vendor-0.3.4-darwin-amd64.tar.gz
-mv ./vendor-0.3.4-darwin-amd64/vendor ~/bin/vendor
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.5/vendor-0.3.5-darwin-amd64.tar.gz" --output - > vendor-0.3.5-darwin-amd64.tar.gz
+tar -xvzf vendor-0.3.5-darwin-amd64.tar.gz
+mv ./vendor-0.3.5-darwin-amd64/vendor ~/bin/vendor
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
 ### Windows
 
 ```
-curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.4/vendor-0.3.4-windows-amd64.zip" --output - > vendor-0.3.4-windows-amd64.zip
-unzip vendor-0.3.4-windows-amd64.zip
-cp -pr ./vendor-0.3.4-windows-amd64/vendor ~/bin
+curl --progress-bar --show-error --location "https://github.com/shishidosoichiro/vendor/releases/download/0.3.5/vendor-0.3.5-windows-amd64.zip" --output - > vendor-0.3.5-windows-amd64.zip
+unzip vendor-0.3.5-windows-amd64.zip
+cp -pr ./vendor-0.3.5-windows-amd64/vendor ~/bin
 echo ". <(vendor completion bash)" >> ~/.bashrc
 ```
 
